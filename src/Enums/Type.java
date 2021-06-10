@@ -14,6 +14,20 @@ public enum Type {
         string = newString;
     }
 
+    public static Type fromInteger(int x) {
+        switch(x) {
+            case 0:
+                return Clover;
+            case 1:
+                return Heart;
+            case 2:
+                return Spade;
+            case 3:
+                return Diamond;
+        }
+        return null;
+    }
+
     public int getValue() { return value; }
     public String getString() { return string; }
 }

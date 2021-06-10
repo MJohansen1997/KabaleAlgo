@@ -2,6 +2,8 @@ import java.util.ArrayList;
 
 public class MoveLogic {
 
+    private ArrayList<Move> moves = new ArrayList<>();
+
     private boolean colourDiff(Card card1, Card card2) {
         return card1.getColour() != card2.getColour();
     }
@@ -10,7 +12,7 @@ public class MoveLogic {
         return card1.getType() != card2.getType();
     }
 
-    private boolean goalCheck(Card moveCard, Suit suit) {
+    private boolean suitCheck(Card moveCard, Suit suit) {
         //gets the top card of the goal of the same type of moveCard
         Card toCard = suit.getTop(moveCard.getType().getValue());
 
@@ -37,17 +39,19 @@ public class MoveLogic {
         return stackCheck(moveCard, toCard) && colourDiff(moveCard, toCard);
     }
 
-    public Move checkStackToGoal(Suit suit, BuildStack stack) {
+    public void checkStackToSuit(Suit suit, BuildStack stack) {
         //gets the stack leaders, docker aka front card
         Card frontCard = stack.getStackLeader().getDocker();
 
-        if (goalCheck(frontCard, suit))
+        if (suitCheck(frontCard, suit)) {
             System.out.println("Legal Move Found: " + frontCard + " to Suit");
-
-        return null;
+            Move temp = new Move();
+            temp.addMove(10, frontCard, suit.getTop(frontCard.getType().getValue()));
+            moves.add(temp);
+        }
     }
 
-    public Move checkInternalMove(BuildStack stack1, BuildStack stack2) {
+    public void checkInternalMove(BuildStack stack1, BuildStack stack2) {
         Block block1 = stack1.getStackLeader();
         Block block2 = stack2.getStackLeader();
         Card block1Leader = block1.getLeader();
@@ -58,19 +62,27 @@ public class MoveLogic {
         if (checkLegalMove(block1Leader, block2Docker)) {
             //legal move
             System.out.println("Legal Move Found: " + block1Leader + " to " + block2Docker);
+            Move temp = new Move();
+            temp.addMove(5 + (1 + stack1.stack.size()), block1Leader, block2Docker);
+            moves.add(temp);
         }
         else if (checkLegalMove(block2Leader, block1Docker)) {
             //legal move
             System.out.println("Legal Move Found: " + block2Leader + block1Docker);
+            Move temp = new Move();
+            temp.addMove(5 + (1 + stack2.stack.size()), block2Leader, block1Docker);
+            moves.add(temp);
         }
-        return null;
     }
 
-    public Move findDeckMove(Talon talon, ArrayList<BuildStack> stacks, Suit suit) {
+    public void findDeckMove(Talon talon, ArrayList<BuildStack> stacks, Suit suit) {
         for (Card deckCard : talon.getDeck()) {
-            if (goalCheck(deckCard, suit)) {
+            if (suitCheck(deckCard, suit)) {
                 //Card can be moved into goal
                 System.out.println("Legal Move Found: From Talon " + deckCard + " to Suit");
+                Move temp = new Move();
+                temp.addMove(10, deckCard, suit.getTop(deckCard.getType().getValue()));
+                moves.add(temp);
             }
             //checks for each buildstack if the card can be added to that stacks docker
             for (BuildStack stack : stacks) {
@@ -78,9 +90,15 @@ public class MoveLogic {
                 if (checkLegalMove(deckCard, stackDocker)) {
                     //card can be moved to the stack
                     System.out.println("Legal Move Found: From Talon " + deckCard+ " To " + stackDocker);
+                    Move temp = new Move();
+                    temp.addMove(5, deckCard, stackDocker);
+                    moves.add(temp);
                 }
             }
         }
-        return null;
+    }
+
+    public ArrayList<Move> getMoves() {
+        return moves;
     }
 }

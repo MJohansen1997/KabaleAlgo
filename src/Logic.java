@@ -10,6 +10,7 @@ public class Logic {
     Talon talon;
 
 
+
     public void setUp() {
         ArrayList<Card> deckCards = new ArrayList<>();
         ArrayList<Card> cards = new ArrayList<>();
@@ -53,7 +54,7 @@ public class Logic {
 
     public void checkForMoves() {
         for (int i = 0; i < 7; i++) {
-            moveLogic.checkStackToGoal(suit, buildstacks.get(i));
+            moveLogic.checkStackToSuit(suit, buildstacks.get(i));
             for (int j = i+1; j < 6; j++) {
                 //checking if stack 1 shares any moves
                 moveLogic.checkInternalMove(buildstacks.get(i), buildstacks.get(j));
@@ -61,6 +62,7 @@ public class Logic {
         }
         //checks deck moves as last
         moveLogic.findDeckMove(talon, buildstacks, suit);
+        System.out.println(moveLogic.getMoves().toString());
     }
 
     private void setUpStacks(ArrayList<Card> cards) {

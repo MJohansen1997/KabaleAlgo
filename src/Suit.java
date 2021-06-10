@@ -1,21 +1,25 @@
+import Enums.Type;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class Suit {
-    ArrayList<LinkedList<Card>> goal;
+    ArrayList<LinkedList<Card>> suitArray;
 
     public Suit() {
-        goal = new ArrayList<>();
+        suitArray = new ArrayList<>();
         for (int i = 0; i < 4; i++) {
-            goal.add(new LinkedList<Card>());
+            LinkedList<Card> temp = new LinkedList<>();
+            temp.add(new Card(true, 0, Type.fromInteger(i) ));
+            suitArray.add(temp);
         }
     }
 
-    public ArrayList<LinkedList<Card>> getGoal() {
-        return goal;
+    public ArrayList<LinkedList<Card>> getSuit() {
+        return suitArray;
     }
 
     public Card getTop(int index) {
-        return goal.get(index).peekLast();
+        return suitArray.get(index).peekLast();
     }
 }
