@@ -20,6 +20,8 @@ public class Card {
 
     public Card(boolean faceUp) {
         this.faceUp = faceUp;
+        this.faceValue = 0;
+        this.type = Type.Diamond;
     }
 
     public Colour getColour() {

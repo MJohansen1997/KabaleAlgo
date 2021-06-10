@@ -7,6 +7,11 @@ public class Block {
         this.block = block;
     }
 
+    public Block(Block block) {
+        LinkedList<Card> temp = new LinkedList<>(block.block);
+        this.block = temp;
+    }
+
     public LinkedList<Card> getBlock() {
         return block;
     }
