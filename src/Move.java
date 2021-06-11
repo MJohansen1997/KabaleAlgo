@@ -45,6 +45,14 @@ public class Move {
         return moveList.size() >= 2;
     }
 
+    public Move cloneObject() {
+        Move temp = new Move();
+        temp.point = this.point;
+        temp.moveList.addAll(this.moveList);
+
+        return temp;
+    }
+
     public LinkedList<Card> getMove() {
         LinkedList<Card> temp = new LinkedList<>();
         temp.add(moveList.pollFirst());

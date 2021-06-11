@@ -18,8 +18,8 @@ public class Logic {
             checkForMoves(board, talons, suits, moves);
         for (Move move : listOfMoves) {
             ArrayList<BuildStack> temp = new BuildStackHolder(buildStackHolder).stacks;
-            performMove(move.addMove(0, null, null), temp);
-            checkForMoves(temp, talons, suits, move.addMove(0, null, null));
+            performMove(move.cloneObject(), temp);
+            checkForMoves(temp, talons, suits,move.cloneObject());
         }
         run();
     }
