@@ -27,30 +27,24 @@ public class MoveLogic {
 
     public Move unTurnedCard(BuildStack stack, Move move) {
             if(!stack.getStackLeader().getLeader().isFaceUp()) {
-                return move.addMove(5+1+stack.getStack().size(), null, null);
+                return move.addMove(5, null, null);
             }
         return null;
     }
 
-    public Move checkStackToSuit(Suit suit, BuildStack stack, Move move) {
+    public Move checkStackToSuit(Suit suit, BuildStack stack) {
         //gets the stack leaders, docker aka front card
-        BuildStack temp = stack;
-        Card frontCard = temp.getStackLeader().getDocker();
+        Card frontCard = stack.getStackLeader().getDocker();
         if (suitCheck(frontCard, suit)) {
             int type = frontCard.getType().getValue();
             System.out.println("Legal Move Found: " + frontCard + " to Suit");
-            if (temp.getStackLeader().getBlock().size() == 1)
-                temp.removeStack(stack.getStackLeader());
-            else
-                temp.getStackLeader().getBlock().remove(frontCard);
-            Card suitCard = suit.getSuit(type).peekLast();
-            suit.getSuit(type).add(frontCard);
-            return move.addMove(10, frontCard, suitCard);
+            Move move = new Move();
+            return move.addMove(10, frontCard, suit.getTop(type));
         }
         return null;
     }
 
-    public Move checkInternalMove(BuildStack stack1, BuildStack stack2, Move move) {
+    public Move checkInternalMove(BuildStack stack1, BuildStack stack2) {
         Block block1 = stack1.getStackLeader();
         Block block2 = stack2.getStackLeader();
         Card block1Leader = block1.getLeader();
@@ -60,29 +54,39 @@ public class MoveLogic {
 
         if (checkLegalMove(block1Leader, block2Docker)) {
             //legal move
+            int size = stack1.getStack().size();
             System.out.println("Legal Move Found: " + block1Leader + " to " + block2Docker);
-            block2.getBlock().addAll(block1.getBlock());
-            stack1.removeStack(block1);
-            return move.addMove(5, block1Leader, block2Docker);
+            Move move = new Move();
+            if (size != 1) {
+                return move.addMove((1 + stack1.getStack().size()), block1Leader, block2Docker);
+            }
+            else {
+                return move.addMove(100, block1Leader, block2Docker);
+            }
         }
         else if (checkLegalMove(block2Leader, block1Docker)) {
             //legal move
+            int size = stack2.getStack().size();
             System.out.println("Legal Move Found: " + block2Leader + block1Docker);
-            block1.getBlock().addAll(block2.getBlock());
-            stack2.removeStack(block2);
-            return move.addMove(5, block2Leader, block1Docker);
+            Move move = new Move();
+            if (size != 1) {
+                return move.addMove((1 + stack2.getStack().size()), block2Leader, block1Docker);
+            }
+            else {
+                return move.addMove(100, block2Leader, block1Docker);
+            }
         }
         return null;
     }
 
-    public Move findTalonMove(int index, Talon talon, ArrayList<BuildStack> stacks, Suit suit, Move move) {
+    public Move findTalonMove(int index, Talon talon, ArrayList<BuildStack> stacks, Suit suit) {
         Card deckCard = talon.getDeck().get(index);
         if (suitCheck(deckCard, suit)) {
             int typeInt = deckCard.getType().getValue();
             Card temp = suit.getTop(typeInt);
             //Card can be moved into goal
             System.out.println("Legal Move Found: From Talon " + deckCard + " to Suit");
-            suit.getSuit(typeInt).add(deckCard);
+            Move move = new Move();
             return move.addMove(10, deckCard, temp);
         }
         //checks for each buildstack if the card can be added to that stacks docker
@@ -91,8 +95,7 @@ public class MoveLogic {
             if (checkLegalMove(deckCard, stackDocker)) {
                 //card can be moved to the stack
                 System.out.println("Legal Move Found: From Talon " + deckCard + " To " + stackDocker);
-                stack.getStackLeader().getBlock().add(deckCard);
-                talon.getDeck().remove(deckCard);
+                Move move = new Move();
                 return move.addMove(5, deckCard, stackDocker);
             }
         }

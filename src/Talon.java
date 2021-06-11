@@ -11,7 +11,4 @@ public class Talon {
         return deck;
     }
 
-    public void findDeckToBoard(Card card){
-
-    }
 }
