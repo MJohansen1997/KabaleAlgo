@@ -6,14 +6,9 @@ public class Move {
     LinkedList<Card> moveListSim;
 
     public Move() {
-        point = 0;
-        moveList = new LinkedList<>();
-        moveListSim = new LinkedList<>();
-    }
-    public Move(int point, LinkedList<Card> list) {
-        this.point = point;
-        moveList = new LinkedList<>();
-        moveListSim = new LinkedList<>();
+        this.point = 0;
+        this.moveList = new LinkedList<>();
+        this.moveListSim = new LinkedList<>();
     }
 
     public Move(Move move) {
@@ -36,14 +31,21 @@ public class Move {
         move.moveList.add(card2);
 
         move.moveListSim.addAll(moveListSim);
-        moveListSim.add(card1);
-        moveListSim.add(card2);
+        move.moveListSim.add(card1);
+        move.moveListSim.add(card2);
 
         return move ;
     }
 
+    public Move add(Move move) {
+        this.point += move.point;
+        this.moveList.addAll(move.moveList);
+        this.moveListSim.addAll(move.moveListSim);
+        return this;
+    }
+
     public boolean hasMoves() {
-        return moveList.size() >= 2;
+        return moveListSim.size() >= 2;
     }
 
     public Move cloneObject() {
@@ -60,6 +62,13 @@ public class Move {
         temp.add(moveList.pollFirst());
         temp.add(moveList.pollFirst());
         return temp;
+    }
+
+    public LinkedList<Card> getSimMove() {
+//        LinkedList<Card> temp = new LinkedList<>();
+//        temp.add(moveList.pollFirst());
+//        temp.add(moveList.pollFirst());
+        return moveListSim;
     }
 
 //    public LinkedList<Card> getSim() {

@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 public class BuildStackHolder {
-    ArrayList<BuildStack> stacks;
+    private ArrayList<BuildStack> stacks;
 
     public BuildStackHolder() {
         stacks = new ArrayList<>();
@@ -25,5 +25,17 @@ public class BuildStackHolder {
             temp.stacks.add(this.stacks.get(i).cloneBuildstack());
         }
         return temp;
+    }
+
+    public boolean removeCard(Card card){
+        for (BuildStack stack : stacks) {
+            if (stack.removeCard(card))
+                return true;
+        }
+        return false;
+    }
+
+    public ArrayList<BuildStack> getStackList() {
+        return stacks;
     }
 }

@@ -28,10 +28,26 @@ public class Suit {
     }
 
     public Card getTop(int index) {
+        if (index < 0 || index > 3)
+            return new Card(false);
         return suitArray.get(index).peekLast();
     }
 
-    public LinkedList<Card> getSuit(int typeIndex) {
-        return suitArray.get(typeIndex);
+    public LinkedList<Card> getSuit(int index) {
+        if (index < 0 || index > 3)
+            return new LinkedList<>();
+        return suitArray.get(index);
+    }
+
+    public boolean removeCard(Card card) {
+        LinkedList<Card> list = getSuit(card.getType().getValue());
+        for (int i = 0; i < list.size(); i++) {
+            Card suitCard =list.get(i);
+            if (suitCard.compareCards(card)) {
+                list.remove(i);
+                return true;
+            }
+        }
+        return false;
     }
 }

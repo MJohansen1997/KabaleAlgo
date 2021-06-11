@@ -4,147 +4,148 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class Logic {
+    int iteration;
     ArrayList<Move> listOfMoves = new ArrayList<>();
-    ArrayList<BuildStack> board = new ArrayList<>();
-    BuildStackHolder buildStackHolder = new BuildStackHolder(board);
-    Suit suits = new Suit();
     MoveLogic moveLogic = new MoveLogic();
     Talon talons;
-    Move moves = new Move();
+    ArrayList<BuildStack> board = new ArrayList<>();
 
     public void run() {
-        if (listOfMoves.size() == 0)
-            checkForMoves(board, talons, suits, moves);
-        for (Move move : listOfMoves) {
-            ArrayList<BuildStack> temp = new BuildStackHolder(buildStackHolder).stacks;
-            performMove(move.cloneObject(), temp);
-            checkForMoves(board, talons.cloneTalon(), suits.cloneSuit(), move.cloneObject());
+        BuildStackHolder buildStackHolder = new BuildStackHolder(board);
+        Suit suits = new Suit();
+        Move move = new Move();
+
+        checkForMoves(move, buildStackHolder, talons, suits);
+        Move max = new Move();
+        for (Move maxCheck : listOfMoves) {
+            if (max.point < maxCheck.point) {
+                max = maxCheck;
+            }
         }
-        run();
+        System.out.println("Max: " + max);
     }
 
     public void setUp() {
         ArrayList<Card> deckCards = new ArrayList<>();
         ArrayList<Card> cards = new ArrayList<>();
 
-        cards.add(new Card(true, 12, Type.Diamond));
-        cards.add(new Card(true, 2, Type.Heart));
-        cards.add(new Card(true, 4, Type.Heart));
-        cards.add(new Card(true, 2, Type.Diamond));
-        cards.add(new Card(true, 5, Type.Spade));
-        cards.add(new Card(true, 6, Type.Heart));
-        cards.add(new Card(true, 1, Type.Spade));
+        cards.add(new Card(true, 13, Type.Heart));
+        cards.add(new Card(true, 10, Type.Heart));
+        cards.add(new Card(true, 6, Type.Spade));
+        cards.add(new Card(true, 10, Type.Diamond));
+        cards.add(new Card(true, 10, Type.Spade));
+        cards.add(new Card(true, 13, Type.Clover));
+        cards.add(new Card(true, 5, Type.Diamond));
         setUpStacks(cards);
 
-        deckCards.add(new Card(true, 7, Type.Spade));
-        deckCards.add(new Card(true, 1, Type.Clover));
-        deckCards.add(new Card(true, 6, Type.Spade));
-        deckCards.add(new Card(true, 12, Type.Clover));
-        deckCards.add(new Card(true, 10, Type.Diamond));
-        deckCards.add(new Card(true, 8, Type.Clover));
-        deckCards.add(new Card(true, 9, Type.Diamond));
-        deckCards.add(new Card(true, 12, Type.Spade));
-        deckCards.add(new Card(true, 3, Type.Heart));
-        deckCards.add(new Card(true, 2, Type.Spade));
-        deckCards.add(new Card(true, 11, Type.Heart));
-        deckCards.add(new Card(true, 8, Type.Spade));
-        deckCards.add(new Card(true, 11, Type.Spade));
-        deckCards.add(new Card(true, 7, Type.Heart));
-        deckCards.add(new Card(true, 12, Type.Heart));
+        deckCards.add(new Card(true, 1, Type.Heart));
         deckCards.add(new Card(true, 11, Type.Diamond));
-        deckCards.add(new Card(true, 3, Type.Diamond));
-        deckCards.add(new Card(true, 10, Type.Heart));
-        deckCards.add(new Card(true, 9, Type.Heart));
-        deckCards.add(new Card(true, 9, Type.Clover));
-        deckCards.add(new Card(true, 13, Type.Diamond));
+        deckCards.add(new Card(true, 12, Type.Diamond));
+        deckCards.add(new Card(true, 11, Type.Spade));
+        deckCards.add(new Card(true, 11, Type.Clover));
+        deckCards.add(new Card(true, 6, Type.Diamond));
+        deckCards.add(new Card(true, 12, Type.Spade));
+        deckCards.add(new Card(true, 8, Type.Spade));
+        deckCards.add(new Card(true, 3, Type.Spade));
+        deckCards.add(new Card(true, 3, Type.Clover));
+        deckCards.add(new Card(true, 8, Type.Clover));
         deckCards.add(new Card(true, 9, Type.Spade));
-        deckCards.add(new Card(true, 7, Type.Clover));
+        deckCards.add(new Card(true, 7, Type.Diamond));
+        deckCards.add(new Card(true, 4, Type.Diamond));
+        deckCards.add(new Card(true, 5, Type.Clover));
+        deckCards.add(new Card(true, 7, Type.Heart));
+        deckCards.add(new Card(true, 2, Type.Heart));
+        deckCards.add(new Card(true, 12, Type.Heart));
+        deckCards.add(new Card(true, 13, Type.Spade));
+        deckCards.add(new Card(true, 4, Type.Spade));
         deckCards.add(new Card(true, 6, Type.Clover));
+        deckCards.add(new Card(true, 4, Type.Heart));
+        deckCards.add(new Card(true, 8, Type.Heart));
+        deckCards.add(new Card(true, 12, Type.Clover));
         talons = new Talon(deckCards);
 
     }
 
-    public void insertCard(Card toInsert, Card toInsertOn, ArrayList<BuildStack> stacks) {
-        for (BuildStack stack : stacks) {
+    public void insertCard(Card toInsert, Card toInsertOn, BuildStackHolder stacks, Suit suit) {
+        for (BuildStack stack : stacks.getStackList()) {
             //this stack contains card1
-            if (stack.getStackLeader().getDocker() == toInsertOn) {
+            if (stack.getStackLeader().getDocker().compareCards(toInsertOn)) {
                 stack.getStackLeader().getBlock().add(toInsert);
                 return;
             }
         }
-        if (suits.getSuit(toInsertOn.getType().getValue()).contains(toInsertOn)) {
-            suits.getSuit(toInsertOn.getType().getValue()).add(toInsert);
+        if (suit.getSuit(toInsertOn.getType().getValue()).contains(toInsertOn)) {
+            suit.getSuit(toInsertOn.getType().getValue()).add(toInsert);
         }
     }
 
-    public void removeCard(Card card, ArrayList<BuildStack> stacks) {
-        for (BuildStack stack : stacks) {
-            //this stack contains card1
-            int index = stack.getStackLeader().getBlock().indexOf(card);
-            if (index == 0) {
-                stack.getStack().remove(stack.getStackLeader());
-                return;
-            }
-            else if (index != -1) {
-                //if the card isn't in leader position
-            }
-            else {
-            }
-        }
-        if (talons.getDeck().remove(card)) {
+    public void removeCard(Card card, BuildStackHolder stacks, Talon talon, Suit suit) {
+        if (stacks.removeCard(card))
             return;
-        }
+        else if (talon.removeCard(card))
+            return;
+        else
+            suit.removeCard(card);
+    }
 
-        if (suits.getTop(card.getType().getValue()) == card) {
-            suits.getSuit(card.getType().getValue()).remove(card);
+    public void turnCard(Card card, BuildStackHolder stacks) {
+        for (BuildStack stack : stacks.getStackList()) {
+            //this stack contains card1
+            if (stack.getStackLeader().blockContains(card) != -1) {
+                stack.getStackLeader().getLeader().setFaceUp();
+            }
         }
     }
 
-    public void performMove(Move moveArrayList, ArrayList<BuildStack> stacks) {
+    public void performMove(Move moveArrayList, BuildStackHolder stacks, Talon talon, Suit suit) {
         LinkedList<Card> cardsToMove = new LinkedList<>();
         if (moveArrayList.hasMoves()) {
-            cardsToMove = moveArrayList.getMove();
+            cardsToMove = moveArrayList.getSimMove();
 //            cardsToMove = moveArrayList.getSim();
             Card card1 = cardsToMove.poll();
             Card card2 = cardsToMove.poll();
 
-            insertCard(card1, card2, stacks);
-            removeCard(card1, stacks);
+            if (card1 == card2)
+                turnCard(card1, stacks);
+            else {
+                removeCard(card1, stacks, talon, suit);
+                insertCard(card1, card2, stacks, suit);
+            }
         }
     }
 
-    public void checkForMoves(ArrayList<BuildStack> stackArray, Talon talon, Suit suit, Move move) {
-        performMove(move, stackArray);
-        Move tempMove = new Move(move);
+    public void checkForMoves(Move move, BuildStackHolder holder, Talon talon, Suit suit) {
+//        System.out.println(iteration++);
+        if (move == null)
+            return;
+        performMove(move, holder, talon, suit);
+        ArrayList<BuildStack> stackArray = holder.getStackList();
+        //checks the board for internal moves
         for (int i = 0; i < 7; i++) {
-           tempMove = moveLogic.checkStackToSuit(suit, stackArray.get(i));
-            if (tempMove != null)
-                listOfMoves.add(tempMove);
+            checkForMoves(moveLogic.checkStackToSuit(suit, stackArray.get(i), move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit());
             for (int j = i + 1; j < 7; j++) {
                 //checking if stack 1 shares any moves
-                tempMove = moveLogic.checkInternalMove(stackArray.get(i), stackArray.get(j));
-                if (tempMove != null)
-                    listOfMoves.add(tempMove);
+                checkForMoves(moveLogic.checkInternalMove(stackArray.get(i), stackArray.get(j), move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit());
             }
         }
-        //defines a scope so temp only exist inside this scope
-        {
-            boolean temp = false;
-            for (int i = 0; i < 7; i++) {
-                if (moveLogic.unTurnedCard(stackArray.get(i), move) != null) {
-                    listOfMoves.add(tempMove);
-                    temp = true;
-                }
-            }
-            if (temp)
-                return;
+
+        //checks for unturned cards
+        Move temp = new Move();
+        for (int i = 0; i < 7; i++) {
+            temp = moveLogic.unTurnedCard(stackArray.get(i), temp);
+        }
+        if (temp.hasMoves()) {
+            move.add(temp);
+            System.out.println("Move Combination Found: " + move);
+            listOfMoves.add(move);
+            return;
         }
         //checks deck moves as last
-        for (int i = 0; i < talon.getDeck().size(); i++) {
-            tempMove = moveLogic.findTalonMove(i, talon, stackArray, suit);
-            if (tempMove != null)
-                listOfMoves.add(tempMove);
+        if (!move.hasMoves()) {
+                checkForMoves(moveLogic.findTalonMove(talon, stackArray, suit, move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit());
         }
+        System.out.println("Move Combination Found: " + move);
+        listOfMoves.add(move);
     }
 
     private void setUpStacks(ArrayList<Card> cards) {
@@ -159,6 +160,7 @@ public class Logic {
             temp.add(cards.get(i));
             blocks.add(new Block(temp));
             board.add(new BuildStack(blocks));
+            board.get(i).setIndex(i);
         }
     }
 }

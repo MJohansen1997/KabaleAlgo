@@ -17,4 +17,14 @@ public class Talon {
         return new Talon(temp);
     }
 
+    public boolean removeCard(Card card) {
+        for (Card deckCard : deck) {
+            if (deckCard.compareCards(card)) {
+                deck.remove(deckCard);
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

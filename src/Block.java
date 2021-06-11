@@ -17,8 +17,19 @@ public class Block {
 
     public Block cloneBlock() {
         Block temp = new Block();
-        temp.getBlock().addAll(this.getBlock());
+        for (int i = 0; i < this.getBlock().size(); i++) {
+            temp.block.add(this.getBlock().get(i).cloneCard());
+        }
         return temp;
+    }
+
+    public int blockContains(Card card) {
+        for (int i = 0; i < block.size(); i++) {
+            Card comparer = block.get(i);
+            if (comparer.compareCards(card))
+                return i;
+        }
+        return -1;
     }
 
     public LinkedList<Card> getBlock() {

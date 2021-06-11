@@ -4,7 +4,8 @@ public enum Type {
     Clover(0, "♣️"),
     Spade(2, "♠️"),
     Heart(1, "♥️"),
-    Diamond(3, "♦️");
+    Diamond(3, "♦️"),
+    Unturned(-1,"?");
 
     private final int value;
     private final String string;

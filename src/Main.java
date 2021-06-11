@@ -10,9 +10,9 @@ public class Main {
         Logic logic = new Logic();
         logic.setUp();
         logic.run();
-        for (int i = 0; i < logic.listOfMoves.size(); i++) {
-            System.out.println(logic.listOfMoves.get(i));
-        }
+//        for (int i = 0; i < logic.listOfMoves.size(); i++) {
+//            System.out.println(logic.listOfMoves.get(i));
+//        }
 //        System.out.println(logic.listOfMoves);
 
     }
