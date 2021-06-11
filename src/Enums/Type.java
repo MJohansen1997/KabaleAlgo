@@ -15,6 +15,7 @@ public enum Type {
         string = newString;
     }
 
+    //method uses to get an type from an integer
     public static Type fromInteger(int x) {
         switch(x) {
             case 0:
@@ -25,10 +26,12 @@ public enum Type {
                 return Spade;
             case 3:
                 return Diamond;
+            default:
+                return Unturned;
         }
-        return null;
     }
 
+    //methods to get either the int value or the string value of an Type enum
     public int getValue() { return value; }
     public String getString() { return string; }
 }

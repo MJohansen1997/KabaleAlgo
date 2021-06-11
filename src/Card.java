@@ -7,9 +7,10 @@ public class Card {
     private Colour colour;
     private Type type;
 
-    public Card() {
-
-    }
+    /** Primary constructor of a Card object
+     * @param faceUp The status of the card if it's face up or not
+     * @param faceValue The card value of the card
+     * @param type The type of the card Hearts, Spade etc.*/
     public Card(boolean faceUp, int faceValue, Type type) {
         this.faceUp = faceUp;
         this.faceValue = faceValue;
@@ -20,12 +21,14 @@ public class Card {
         this.type = type;
     }
 
+    /**Constructor for fast creating of unturned cards*/
     public Card(boolean faceUp) {
         this.faceUp = faceUp;
         this.faceValue = 0;
         this.type = Type.Unturned;
     }
 
+    /**Cloning method for recursion purposes*/
     public Card cloneCard() {
         Card temp = new Card(false);
         temp.type = this.type;
@@ -55,10 +58,13 @@ public class Card {
         faceUp = true;
     }
 
+    /** Method to compare if two cards are the same card, notice not the same Object!
+     * @param toCompare The card you want to compare with the card who this method was called on*/
     public boolean compareCards(Card toCompare) {
         return this.getFaceValue() == toCompare.getFaceValue() && this.getType() == toCompare.getType();
     }
 
+    //standard to string method
     @Override
     public String toString() {
         return "Card{" + faceValue + type.getString() + '}';

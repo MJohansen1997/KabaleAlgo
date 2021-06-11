@@ -11,12 +11,14 @@ public class Talon {
         return deck;
     }
 
+    /** cloning method for recursion purposes*/
     public Talon cloneTalon() {
         ArrayList<Card> temp = new ArrayList<>();
         temp.addAll(this.deck);
         return new Talon(temp);
     }
 
+    /** This method looks to attempt to remove a card from the talon/deck*/
     public boolean removeCard(Card card) {
         for (Card deckCard : deck) {
             if (deckCard.compareCards(card)) {

@@ -6,6 +6,7 @@ import java.util.LinkedList;
 public class Suit {
     ArrayList<LinkedList<Card>> suitArray;
 
+    /** Standard constructor for the suit*/
     public Suit() {
         suitArray = new ArrayList<>();
         for (int i = 0; i < 4; i++) {
@@ -15,6 +16,7 @@ public class Suit {
         }
     }
 
+    /** Clone method for recursion purposes*/
     public Suit cloneSuit() {
         Suit temp = new Suit();
         temp.suitArray = new ArrayList<>();
@@ -27,18 +29,23 @@ public class Suit {
         return temp;
     }
 
+    /** This method returns the top card of a type suit*/
     public Card getTop(int index) {
         if (index < 0 || index > 3)
             return new Card(false);
         return suitArray.get(index).peekLast();
     }
 
+    /** This method returns the suit of a certain type from the index
+     * which normally comes from the card.GetType().getvalue()*/
     public LinkedList<Card> getSuit(int index) {
         if (index < 0 || index > 3)
             return new LinkedList<>();
         return suitArray.get(index);
     }
 
+    /** This method will attempt to remove a card from the suit
+     * @param card The card which is to be removed*/
     public boolean removeCard(Card card) {
         LinkedList<Card> list = getSuit(card.getType().getValue());
         for (int i = 0; i < list.size(); i++) {

@@ -1,5 +1,5 @@
 import java.util.LinkedList;
-
+/** The move class is used to contain a chain of moves and their total amount of algorithmic points*/
 public class Move {
     int point;
     LinkedList<Card> moveList;
@@ -9,17 +9,6 @@ public class Move {
         this.point = 0;
         this.moveList = new LinkedList<>();
         this.moveListSim = new LinkedList<>();
-    }
-
-    public Move(Move move) {
-        point =+ move.point;
-        moveList = new LinkedList<>();
-        while (move.moveList.peekFirst() != null) {
-            moveList.add(move.moveList.pollFirst());
-        }
-        while (move.moveListSim.peekFirst() != null) {
-            moveListSim.add(move.moveListSim.pollFirst());
-        }
     }
 
     public Move addMove(int points, Card card1, Card card2) {
@@ -37,46 +26,19 @@ public class Move {
         return move ;
     }
 
-    public Move add(Move move) {
+    public void add(Move move) {
         this.point += move.point;
         this.moveList.addAll(move.moveList);
         this.moveListSim.addAll(move.moveListSim);
-        return this;
     }
 
     public boolean hasMoves() {
         return moveListSim.size() >= 2;
     }
 
-    public Move cloneObject() {
-        Move temp = new Move();
-        temp.point = this.point;
-        temp.moveList.addAll(this.moveList);
-        temp.moveListSim.addAll(this.moveListSim);
-
-        return temp;
-    }
-
-    public LinkedList<Card> getMove() {
-        LinkedList<Card> temp = new LinkedList<>();
-        temp.add(moveList.pollFirst());
-        temp.add(moveList.pollFirst());
-        return temp;
-    }
-
-    public LinkedList<Card> getSimMove() {
-//        LinkedList<Card> temp = new LinkedList<>();
-//        temp.add(moveList.pollFirst());
-//        temp.add(moveList.pollFirst());
+    public LinkedList<Card> getSimMoves() {
         return moveListSim;
     }
-
-//    public LinkedList<Card> getSim() {
-//        LinkedList<Card> temp = new LinkedList<>();
-//        temp.add(moveListSim.pollFirst());
-//        temp.add(moveListSim.pollFirst());
-//        return temp;
-//    }
 
     @Override
     public String toString() {
