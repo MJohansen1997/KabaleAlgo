@@ -5,6 +5,9 @@ import java.util.Stack;
 public class BuildStack {
     private ArrayList<Block> stack;
 
+    public BuildStack() {
+        stack = new ArrayList<>();
+    }
     public BuildStack(ArrayList<Block> stack) {
         this.stack = stack;
     }
@@ -13,6 +16,14 @@ public class BuildStack {
         for (Block block : stack.getStack()) {
             this.stack.add(new Block(block));
         }
+    }
+
+    public BuildStack cloneBuildstack() {
+        BuildStack clone = new BuildStack();
+        for (int i = 0; i < this.getStack().size(); i++) {
+            clone.getStack().add(this.stack.get(i).cloneBlock());
+        }
+        return clone;
     }
 
     public ArrayList<Block> getStack() {

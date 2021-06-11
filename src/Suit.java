@@ -15,6 +15,18 @@ public class Suit {
         }
     }
 
+    public Suit cloneSuit() {
+        Suit temp = new Suit();
+        temp.suitArray = new ArrayList<>();
+        for (int i = 0; i < this.suitArray.size(); i++) {
+            temp.suitArray.add(new LinkedList<>());
+            for (int j = 0; j < this.getSuit(i).size(); j++) {
+                temp.getSuit(i).add(this.getSuit(i).get(j));
+            }
+        }
+        return temp;
+    }
+
     public Card getTop(int index) {
         return suitArray.get(index).peekLast();
     }

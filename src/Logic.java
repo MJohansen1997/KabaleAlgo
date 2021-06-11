@@ -13,13 +13,12 @@ public class Logic {
     Move moves = new Move();
 
     public void run() {
-//        BuildStackHolder buildStackHolder2 = new BuildStackHolder(buildStackHolder);
         if (listOfMoves.size() == 0)
             checkForMoves(board, talons, suits, moves);
         for (Move move : listOfMoves) {
             ArrayList<BuildStack> temp = new BuildStackHolder(buildStackHolder).stacks;
             performMove(move.cloneObject(), temp);
-            checkForMoves(temp, talons, suits,move.cloneObject());
+            checkForMoves(board, talons.cloneTalon(), suits.cloneSuit(), move.cloneObject());
         }
         run();
     }
@@ -115,6 +114,7 @@ public class Logic {
     }
 
     public void checkForMoves(ArrayList<BuildStack> stackArray, Talon talon, Suit suit, Move move) {
+        performMove(move, stackArray);
         Move tempMove = new Move(move);
         for (int i = 0; i < 7; i++) {
            tempMove = moveLogic.checkStackToSuit(suit, stackArray.get(i));

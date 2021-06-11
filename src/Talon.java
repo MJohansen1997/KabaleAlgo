@@ -11,4 +11,10 @@ public class Talon {
         return deck;
     }
 
+    public Talon cloneTalon() {
+        ArrayList<Card> temp = new ArrayList<>();
+        temp.addAll(this.deck);
+        return new Talon(temp);
+    }
+
 }

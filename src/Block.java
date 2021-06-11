@@ -6,10 +6,19 @@ public class Block {
     public Block(LinkedList<Card> block) {
         this.block = block;
     }
+    public Block() {
+        LinkedList<Card> temp = new LinkedList<>();
+        this.block = temp;
+    }
 
     public Block(Block block) {
-        LinkedList<Card> temp = new LinkedList<>(block.block);
-        this.block = temp;
+        this.block = new LinkedList<>(block.block);
+    }
+
+    public Block cloneBlock() {
+        Block temp = new Block();
+        temp.getBlock().addAll(this.getBlock());
+        return temp;
     }
 
     public LinkedList<Card> getBlock() {
