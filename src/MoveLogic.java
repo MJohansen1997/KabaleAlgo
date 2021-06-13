@@ -79,7 +79,7 @@ public class MoveLogic {
 //            System.out.println("Legal Move Found: " + block1Leader + " to " + block2Docker);
             //here we check if the block is the last one in the stack
             if (size != 1) {
-                return move.addMove(1, block1Leader, block2Docker);
+                return move.addMove(0, block1Leader, block2Docker);
             } else {
                 return move.addMove(100, block1Leader, block2Docker);
             }
@@ -89,7 +89,7 @@ public class MoveLogic {
 //            System.out.println("Legal Move Found: " + block2Leader + block1Docker);
             //here we check if the block is the last one in the stack
             if (size != 1) {
-                return move.addMove(1, block2Leader, block1Docker);
+                return move.addMove(0, block2Leader, block1Docker);
             } else {
                 return move.addMove(100, block2Leader, block1Docker);
             }
