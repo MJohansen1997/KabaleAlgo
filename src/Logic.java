@@ -155,7 +155,7 @@ public class Logic {
             checkForMoves(moveLogic.checkStackToSuit(suit, stackArray.get(i), move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit());
             for (int j = i + 1; j < 7; j++) {
                 //Checking for possible moves internally between the stacks
-                checkForMoves(moveLogic.checkInternalMove(stackArray.get(i), stackArray.get(j), move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit());
+                checkForMoves(moveLogic.checkInternalStackMove(stackArray.get(i), stackArray.get(j), move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit());
             }
         }
 

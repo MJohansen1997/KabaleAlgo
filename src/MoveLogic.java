@@ -64,7 +64,7 @@ public class MoveLogic {
     }
 
     /** This method searches for internal moves of cards between build stacks on the board*/
-    public Move checkInternalMove(BuildStack stack1, BuildStack stack2, Move move) {
+    public Move checkInternalStackMove(BuildStack stack1, BuildStack stack2, Move move) {
         Block block1 = stack1.getStackLeader();
         Block block2 = stack2.getStackLeader();
         Card block1Leader = block1.getLeader();
@@ -101,6 +101,8 @@ public class MoveLogic {
     public Move findTalonMove(Talon talon, ArrayList<BuildStack> stacks, Suit suit, Move move) {
 //        Card deckCard = talon.getDeck().get(index);
         for (Card deckCard : talon.getDeck()) {
+
+
             //checks if the deck card can be added to the suit
             if (suitCheck(deckCard, suit)) {
                 int typeInt = deckCard.getType().getValue();
@@ -121,5 +123,10 @@ public class MoveLogic {
             }
         }
         return null;
+    }
+
+    public boolean matchingQueenToKing (Card king, Card cardTo) {
+
+        return (king.getFaceValue() - cardTo.getFaceValue() == 1);
     }
 }
