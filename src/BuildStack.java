@@ -31,11 +31,18 @@ public class BuildStack {
     /** the stack leader is basically the block that is in front and moveable this method returns the block who is
      * in front in the stack*/
     public Block getStackLeader() {
+        /*CHANGE from "return null" to "*/
         if (stack.size() == 0)
             return null;
         else
             return stack.get(stack.size()-1);
     }
+
+    /*CHANGE*/
+    public boolean isStackEmpty() {
+        return (stack.size() == 0);
+    }
+
     //Returns the index of the stack
     public int getIndex() {
         return index;
