@@ -81,6 +81,7 @@ public class Logic {
         //If False, and toInsert isn't a Docker, Create new Sublist a New Block from toInsert's Index and remove
         //said sublist from the old block
         for (BuildStack stack : stacks.getStackList()) {
+
             //this stack contains card1
             if (stack.getStackLeader().getDocker().compareCards(toInsertOn)) {
                 stack.getStackLeader().getBlock().add(toInsert);
@@ -108,6 +109,8 @@ public class Logic {
      * @param  talon The talon which the operation should be done on
      * @param suit The suit which the operation should be done on*/
     public void removeCard(Card card, BuildStackHolder stacks, Talon talon, Suit suit) {
+
+
         //checks if the card we want removed is in one of the build stacks if it is we remove it
         if (stacks.removeCard(card)) {}
             //checks if the card we want removed is in the talon if it is we remove it
