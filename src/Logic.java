@@ -10,6 +10,7 @@ public class Logic {
     MoveLogic moveLogic = new MoveLogic();
     Talon talons;
     ArrayList<BuildStack> board = new ArrayList<>();
+    Block alternativeBlock = new Block();
     BuildStackHolder buildStackHolder;
 
     /**The method called to run the algorithm*/
@@ -106,15 +107,14 @@ public class Logic {
     /** This method is used to remove a card by calling the different classes remove card functions
      * @param card The card to be removed
      * @param stacks The stack which the operation should be done on
-     * @param  talon The talon which the operation should be done on
+     * @param talon The talon which the operation should be done on
      * @param suit The suit which the operation should be done on*/
     public void removeCard(Card card, BuildStackHolder stacks, Talon talon, Suit suit) {
-
-
         //checks if the card we want removed is in one of the build stacks if it is we remove it
         if (stacks.removeCard(card)) {}
             //checks if the card we want removed is in the talon if it is we remove it
         else if (talon.removeCard(card)) {}
+        else if (stacks.removeBlock(card)) {}
         else
             //else we will attempt to remove the card from the suit in case none of the other options contained the card
             suit.removeCard(card);
@@ -127,7 +127,7 @@ public class Logic {
     public void turnCard(Card card, BuildStackHolder stacks) {
         for (BuildStack stack : stacks.getStackList()) {
             //this stack contains card1
-            if (stack.getStackLeader().blockContains(card) != -1) {
+            if (stack.getStackLeader().blockContainsIndex(card) != -1) {
                 stack.getStackLeader().getLeader().setFaceUp();
             }
         }
@@ -142,18 +142,13 @@ public class Logic {
     public void performMove(Move movesToPerform, BuildStackHolder stacks, Talon talon, Suit suit) {
         if (movesToPerform.hasMoves()) {
             LinkedList<Card> cardsToMove = movesToPerform.getSimMoves();
-            Block block = new Block();
             Card card1 = cardsToMove.poll();
             Card card2 = cardsToMove.poll();
             if (card1 == card2)
                 turnCard(card1, stacks);
             else {
                 removeCard(card1, stacks, talon, suit);
-                if (block.getBlock().size()>1)
-                    //misforstået
-                    insertSubBlock(card1,stacks);
-                else
-                    insertCard(card1, card2, stacks, suit);
+                insertCard(card1, card2, stacks, suit);
             }
         }
     }
@@ -163,7 +158,7 @@ public class Logic {
      * @param holder The Build Stack list which contains all the build stacks
      * @param talon The talon to be used through the different iterations of the algorithm
      * @param suit The suit to be used through the different iterations of the algorithm
-     * */
+     **/
     public void checkForMoves(Move move, BuildStackHolder holder, Talon talon, Suit suit) {
         //checks if the move sent on was null if that's the cast we can go no longer in this part of the route
         if (move == null)
@@ -196,6 +191,8 @@ public class Logic {
         //checks for deck moves as the last thing
         if (!move.hasMoves()) {
                 checkForMoves(moveLogic.findTalonMove(talon, stackArray, suit, move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit());
+                //System.out.println("Move combination alternative move" + moveLogic.findAlternativeStackMove(stackArray, move));
+                checkForMoves(moveLogic.findAlternativeStackMove(stackArray,move),holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit());
         }
 
         //alternativeMove() { Move Found: Control if Move move Already Contains similar move move.Contain() Then Return null}

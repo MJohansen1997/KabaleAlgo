@@ -19,6 +19,14 @@ public class BuildStackHolder {
         return temp;
     }
 
+    public boolean removeBlock(Card card){
+        for(BuildStack stack : stacks) {
+            if(!(stack.getStackLeader().removeBlock(card) == null))
+                return true;
+        }
+        return false;
+    }
+
     public boolean removeCard(Card card){
         for (BuildStack stack : stacks) {
             if (stack.removeCard(card))
