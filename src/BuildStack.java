@@ -50,7 +50,10 @@ public class BuildStack {
      * @param card is the card you want to remove from the stack*/
     public Block removeCard(Card card) {
         //this stack contains card1
-        int index = this.getStackLeader().blockContainsIndex(card);
+        Block stackLeader = this.getStackLeader();
+        if (stackLeader == null)
+            return null;
+        int index = stackLeader.blockContainsIndex(card);
         if (index != -1) {
             //if the card isn't in leader position or docker position
             //then we need to move multiple cards.

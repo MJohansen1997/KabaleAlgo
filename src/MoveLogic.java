@@ -47,7 +47,10 @@ public class MoveLogic {
      * @param move The Move object we want the possible turn move inserted to*/
     public Move unTurnedCard(BuildStack stack, Move move) {
         //checks if the front card aka leader of a stacks leader block is a unturned card
-        if (!stack.getStackLeader().getLeader().isFaceUp()) {
+        Block temp = stack.getStackLeader();
+        if (temp == null)
+            return move;
+        if (temp.getLeader().getType() == Type.Unturned) {
 //                System.out.println("Unturned card found at: " + stack.getIndex() + " : " + stack.getStackLeader().block.indexOf(stack.getStackLeader().getLeader()));
             return move.addMove(1+(stack.getStack().size()), stack.getStackLeader().getLeader(), stack.getStackLeader().getLeader());
         }
@@ -70,6 +73,8 @@ public class MoveLogic {
     public Move checkInternalMove(BuildStack stack1, BuildStack stack2, Move move) {
         Block block1 = stack1.getStackLeader();
         Block block2 = stack2.getStackLeader();
+        if (block1 == null || block2 == null)
+            return null;
         Card block1Leader = block1.getLeader();
         Card block1Docker = block1.getDocker();
         Card block2Leader = block2.getLeader();
@@ -114,7 +119,10 @@ public class MoveLogic {
             }
             //checks through each build stack if the card can be added to that stacks docker
             for (BuildStack stack : stacks) {
-                Card stackDocker = stack.getStackLeader().getDocker();
+                Block stackLeader = stack.getStackLeader();
+                if (stackLeader == null)
+                    continue;
+                Card stackDocker = stackLeader.getDocker();
                 //checks if the two card is a legal move
                 if (checkLegalMove(deckCard, stackDocker)) {
                     //card can be moved to the stack
@@ -128,8 +136,13 @@ public class MoveLogic {
 
     public Move findAlternativeStackMove(ArrayList<BuildStack> stacks, Move move){
         for (int i = 0; i < 7; i++) {
-            LinkedList<Card> blockOfCards = stacks.get(i).getStackLeader().getBlock();
+            Block stackLeader = stacks.get(i).getStackLeader();
+            if (stackLeader == null)
+                continue;
+            LinkedList<Card> blockOfCards = stackLeader.getBlock();
             for (int j = i+1; j < 7; j++) {
+                if (stacks.get(j).getStackLeader() == null)
+                    continue;
                 Card dockerCard = stacks.get(j).getStackLeader().getDocker();
                 for (int k = 0; k < blockOfCards.size(); k++) {
                     Card compareWithCard = blockOfCards.get(k);
