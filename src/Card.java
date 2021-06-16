@@ -1,6 +1,8 @@
 import Enums.Colour;
 import Enums.Type;
 
+import java.util.LinkedList;
+
 public class Card {
     private boolean faceUp;
     private int faceValue;
@@ -62,6 +64,25 @@ public class Card {
      * @param toCompare The card you want to compare with the card who this method was called on*/
     public boolean compareCards(Card toCompare) {
         return this.getFaceValue() == toCompare.getFaceValue() && this.getType() == toCompare.getType();
+    }
+
+    public LinkedList<Card> addCardsToContain(LinkedList<Card> allCards, Card card2) {
+        LinkedList<Card> cardsToAdd = new LinkedList<>();
+                if (allCards.isEmpty() || !allCards.contains(this) && !cardsToAdd.contains(this)){
+                    cardsToAdd.add(this);
+                }
+                if (allCards.isEmpty() || !allCards.contains(card2) && !cardsToAdd.contains(card2)){
+                    cardsToAdd.add(card2);
+            }
+        return cardsToAdd;
+    }
+
+    public boolean compareAlreadyContained(LinkedList<Card> allCards, Card card2){
+        for (int i = 0; i < allCards.size(); i++) {
+            if(compareCards(allCards.get(i)) || card2.compareCards(allCards.get(i)))
+                return true;
+        }
+        return false;
     }
 
     //standard to string method
