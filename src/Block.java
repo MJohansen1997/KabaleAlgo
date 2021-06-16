@@ -16,6 +16,12 @@ public class Block {
         this.block = new LinkedList<>(block.block);
     }
 
+    public Block (Card card) {
+        LinkedList<Card> temp = new LinkedList<>();
+        temp.add(card);
+        this.block = temp;
+    }
+
     /**cloning of the block object for recursion purposes*/
     public Block cloneBlock() {
         Block temp = new Block();

@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.LinkedList;
 /** The move class is used to contain a chain of moves and their total amount of algorithmic points*/
 public class Move {

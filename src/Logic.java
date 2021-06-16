@@ -32,6 +32,13 @@ public class Logic {
         ArrayList<Card> deckCards = new ArrayList<>();
         ArrayList<Card> cards = new ArrayList<>();
 
+        setUpTestForKing(deckCards, cards);
+//        setUpStandard(deckCards, cards);
+
+
+    }
+
+    private void setUpStandard(ArrayList<Card> deckCards, ArrayList<Card> cards) {
         cards.add(new Card(true, 13, Type.Heart));
         cards.add(new Card(true, 10, Type.Heart));
         cards.add(new Card(true, 6, Type.Spade));
@@ -66,8 +73,47 @@ public class Logic {
         deckCards.add(new Card(true, 8, Type.Heart));
         deckCards.add(new Card(true, 12, Type.Clover));
         talons = new Talon(deckCards);
-
     }
+
+    private void setUpTestForKing(ArrayList<Card> deckCards, ArrayList<Card> cards) {
+
+        cards.add(new Card(true, 0, Type.Heart));
+        cards.add(new Card(true, 0, Type.Heart));
+        cards.add(new Card(true, 6, Type.Spade));
+        cards.add(new Card(true, 10, Type.Diamond));
+        cards.add(new Card(true, 10, Type.Spade));
+        cards.add(new Card(true, 13, Type.Clover));
+        cards.add(new Card(true, 5, Type.Diamond));
+        setUpStacks(cards);
+
+
+        deckCards.add(new Card(true, 1, Type.Heart));
+        deckCards.add(new Card(true, 11, Type.Diamond));
+        deckCards.add(new Card(true, 12, Type.Diamond));
+        deckCards.add(new Card(true, 11, Type.Spade));
+        deckCards.add(new Card(true, 11, Type.Clover));
+        deckCards.add(new Card(true, 6, Type.Diamond));
+        deckCards.add(new Card(true, 12, Type.Spade));
+        deckCards.add(new Card(true, 8, Type.Spade));
+        deckCards.add(new Card(true, 3, Type.Spade));
+        deckCards.add(new Card(true, 3, Type.Clover));
+        deckCards.add(new Card(true, 8, Type.Clover));
+        deckCards.add(new Card(true, 9, Type.Spade));
+        deckCards.add(new Card(true, 7, Type.Diamond));
+        deckCards.add(new Card(true, 4, Type.Diamond));
+        deckCards.add(new Card(true, 5, Type.Clover));
+        deckCards.add(new Card(true, 7, Type.Heart));
+        deckCards.add(new Card(true, 2, Type.Heart));
+        deckCards.add(new Card(true, 12, Type.Heart));
+        deckCards.add(new Card(true, 13, Type.Spade));
+        deckCards.add(new Card(true, 4, Type.Spade));
+        deckCards.add(new Card(true, 6, Type.Clover));
+        deckCards.add(new Card(true, 4, Type.Heart));
+        deckCards.add(new Card(true, 8, Type.Heart));
+        deckCards.add(new Card(true, 12, Type.Clover));
+        talons = new Talon(deckCards);
+    }
+
 
     /** This method is used to insert the card into the new position where we want it either in the build stack or in
      * the suit!
@@ -80,6 +126,11 @@ public class Logic {
         //If False, and toInsert isn't a Docker, Create new Sublist a New Block from toInsert's Index and remove
         //said sublist from the old block
         for (BuildStack stack : stacks.getStackList()) {
+            //if a stack is empty and we're trying to move a king. Create a new block with king card
+            if(toInsertOn == null && stack.isStackEmpty()) {
+                stack.getStack().add(new Block(toInsert));
+            }
+
             //this stack contains card1
             if (stack.getStackLeader().getDocker().compareCards(toInsertOn)) {
                 stack.getStackLeader().getBlock().add(toInsert);
@@ -98,7 +149,7 @@ public class Logic {
      * @param suit The suit which the operation should be done on*/
     public void removeCard(Card card, BuildStackHolder stacks, Talon talon, Suit suit) {
         //checks if the card we want removed is in one of the build stacks if it is we remove it
-        if (stacks.removeCard(card)) {}
+        if (stacks.removeCard(card)) { }
             //checks if the card we want removed is in the talon if it is we remove it
         else if (talon.removeCard(card)) {}
         else
@@ -158,7 +209,7 @@ public class Logic {
             checkForMoves(moveLogic.checkStackToSuit(suit, stackArray.get(i), move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit());
             for (int j = i + 1; j < 7; j++) {
                 //Checking for possible moves internally between the stacks
-                checkForMoves(moveLogic.checkInternalStackMove(stackArray.get(i), stackArray.get(j), move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit());
+                checkForMoves(moveLogic.checkInternalStackMove(holder, stackArray.get(i), stackArray.get(j), move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit());
             }
         }
 
@@ -196,10 +247,20 @@ public class Logic {
                 blocks.add(new Block(temp));
             }
             LinkedList<Card> temp = new LinkedList<>();
-            temp.add(cards.get(i));
-            blocks.add(new Block(temp));
-            board.add(new BuildStack(blocks));
-            board.get(i).setIndex(i);
+
+            if(cards.get(i).getFaceValue() == 0) {
+                /* TODO SÅLEDES AT KONGE RYK KAN TESTES*/
+//                temp.add(new Card(true, 0,Type.Clover));
+                blocks.add(new Block(temp));
+                board.add(new BuildStack(blocks));
+                board.get(i).setIndex(i);
+            } else {
+                temp.add(cards.get(i));
+                blocks.add(new Block(temp));
+                board.add(new BuildStack(blocks));
+                board.get(i).setIndex(i);
+            }
+
         }
     }
 }

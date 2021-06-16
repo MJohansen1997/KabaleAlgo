@@ -6,6 +6,7 @@ public class Card {
     private int faceValue;
     private Colour colour;
     private Type type;
+    private String whereIsCard;
 
     /** Primary constructor of a Card object
      * @param faceUp The status of the card if it's face up or not

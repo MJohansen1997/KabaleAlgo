@@ -32,8 +32,9 @@ public class BuildStack {
      * in front in the stack*/
     public Block getStackLeader() {
         /*CHANGE from "return null" to "*/
-        if (stack.size() == 0)
+        if(isStackEmpty()) {
             return null;
+        }
         else
             return stack.get(stack.size()-1);
     }
@@ -42,6 +43,7 @@ public class BuildStack {
     public boolean isStackEmpty() {
         return (stack.size() == 0);
     }
+
 
     //Returns the index of the stack
     public int getIndex() {
