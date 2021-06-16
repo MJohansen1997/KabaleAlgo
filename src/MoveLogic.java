@@ -136,6 +136,7 @@ public class MoveLogic {
                     if(checkLegalMove(compareWithCard, dockerCard)){
                         if(!compareWithCard.compareAlreadyContained(alreadyContained, dockerCard)){
                             alreadyContained.addAll(compareWithCard.addCardsToContain(alreadyContained, dockerCard));
+//                            System.out.println("Alternative Move found!");
                             return move.addMove(0, compareWithCard, dockerCard);
                         }
                        }

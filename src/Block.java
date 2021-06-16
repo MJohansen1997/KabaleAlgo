@@ -90,13 +90,7 @@ public class Block {
         Block list = this;
         Block newBlock;
         LinkedList<Card> listOfCards = list.getBlock();
-
-        if(index == -1){
-            return null;
-        }
-        else {
-            newBlock = (Block) listOfCards.subList(index, listOfCards.size() - 1);
-        }
+        newBlock = new Block(new LinkedList<>(listOfCards.subList(index, listOfCards.size())));
         for (int i = index; i < listOfCards.size(); i++) {
             listOfCards.remove(i);
         }

@@ -10,7 +10,6 @@ public class Logic {
     MoveLogic moveLogic = new MoveLogic();
     Talon talons;
     ArrayList<BuildStack> board = new ArrayList<>();
-    Block alternativeBlock;
     BuildStackHolder buildStackHolder;
 
     /**The method called to run the algorithm*/
@@ -77,30 +76,19 @@ public class Logic {
      * @param toInsertOn The targeted card we want our toInsert card inserted onto
      * @param stacks The stack which this operation should be done on
      * @param suit The suit which this operation should be done on*/
-    public void insertCard(Card toInsert, Card toInsertOn, BuildStackHolder stacks, Suit suit) {
+    public void insertCard(Block toInsert, Card toInsertOn, BuildStackHolder stacks, Suit suit) {
         //First Check If toInsert is Leader If True insert whole block on toInsertOn's Block
         //If False, and toInsert isn't a Docker, Create new Sublist a New Block from toInsert's Index and remove
         //said sublist from the old block
         for (BuildStack stack : stacks.getStackList()) {
-
             //this stack contains card1
             if (stack.getStackLeader().getDocker().compareCards(toInsertOn)) {
-                stack.getStackLeader().getBlock().add(toInsert);
+                stack.getStackLeader().getBlock().addAll(toInsert.getBlock());
                 return;
             }
         }
         if (suit.getSuit(toInsertOn.getType().getValue()).contains(toInsertOn)) {
-            suit.getSuit(toInsertOn.getType().getValue()).add(toInsert);
-        }
-    }
-
-    public void insertSubBlock(Card toInsertOn, BuildStackHolder stacks) {
-        for (BuildStack stack : stacks.getStackList()) {
-            //this stack contains card1
-            if (stack.getStackLeader().getDocker().compareCards(toInsertOn)) {
-                stack.getStackLeader().splitedBlock(stack.getStackLeader(), toInsertOn);
-                return;
-            }
+            suit.getSuit(toInsertOn.getType().getValue()).addAll(toInsert.getBlock());
         }
     }
 
@@ -109,29 +97,20 @@ public class Logic {
      * @param stacks The stack which the operation should be done on
      * @param talon The talon which the operation should be done on
      * @param suit The suit which the operation should be done on*/
-    public void removeCard(Card card, BuildStackHolder stacks, Talon talon, Suit suit) {
+    public Block removeCard(Card card, BuildStackHolder stacks, Talon talon, Suit suit) {
         //checks if the card we want removed is in one of the build stacks if it is we remove it
-        alternativeBlock = stacks.removeBlock(card);
-        if (alternativeBlock!=null) {}
-
-            //checks if the card we want removed is in the talon if it is we remove it
-        else if (talon.removeCard(card)) {}
-        else
-            //else we will attempt to remove the card from the suit in case none of the other options contained the card
-            suit.removeCard(card);
-    }
-
-    /** This method simply just finds the stack of the card that need to be turned and set's the face up value of the
-     * card to true
-     * @param card The card which we want turned
-     * @param stacks The stacks which this operation should be done on*/
-    public void turnCard(Card card, BuildStackHolder stacks) {
-        for (BuildStack stack : stacks.getStackList()) {
-            //this stack contains card1
-            if (stack.getStackLeader().blockContainsIndex(card) != -1) {
-                stack.getStackLeader().getLeader().setFaceUp();
-            }
+        Block temp;
+        temp = stacks.removeBlock(card);
+        if (temp != null)
+            return temp;
+        //checks if the card we want removed is in the talon if it is we remove it
+        temp = talon.removeCard(card);
+        if (temp != null) {
+            return temp;
         }
+        //else we will attempt to remove the card from the suit in case none of the other options contained the card
+        temp = suit.removeCard(card);
+        return temp;
     }
 
     /** This method is used to virtually perform the move found in the earlier iteration so the algorithm can
@@ -145,12 +124,8 @@ public class Logic {
             LinkedList<Card> cardsToMove = movesToPerform.getSimMoves();
             Card card1 = cardsToMove.poll();
             Card card2 = cardsToMove.poll();
-            if (card1 == card2)
-                turnCard(card1, stacks);
-            else {
-                removeCard(card1, stacks, talon, suit);
-                insertCard(card1, card2, stacks, suit);
-            }
+            //Inserts and Removes the card from original location to it's new location
+            insertCard(removeCard(card1, stacks, talon, suit), card2, stacks, suit);
         }
     }
 

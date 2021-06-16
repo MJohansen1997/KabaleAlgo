@@ -21,7 +21,10 @@ public class BuildStackHolder {
 
     public Block removeBlock(Card card){
         for(BuildStack stack : stacks) {
-           return stack.removeCard(card);
+           Block temp = stack.removeCard(card);
+           if (temp != null) {
+               return temp;
+           }
         }
         return null;
     }

@@ -46,15 +46,17 @@ public class Suit {
 
     /** This method will attempt to remove a card from the suit
      * @param card The card which is to be removed*/
-    public boolean removeCard(Card card) {
+    public Block removeCard(Card card) {
         LinkedList<Card> list = getSuit(card.getType().getValue());
         for (int i = 0; i < list.size(); i++) {
             Card suitCard =list.get(i);
             if (suitCard.compareCards(card)) {
                 list.remove(i);
-                return true;
+                Block temp = new Block();
+                temp.getBlock().add(suitCard);
+                return temp;
             }
         }
-        return false;
+        return null;
     }
 }
