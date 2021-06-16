@@ -77,6 +77,9 @@ public class Logic {
      * @param stacks The stack which this operation should be done on
      * @param suit The suit which this operation should be done on*/
     public void insertCard(Card toInsert, Card toInsertOn, BuildStackHolder stacks, Suit suit) {
+        //First Check If toInsert is Leader If True insert whole block on toInsertOn's Block
+        //If False, and toInsert isn't a Docker, Create new Sublist a New Block from toInsert's Index and remove
+        //said sublist from the old block
         for (BuildStack stack : stacks.getStackList()) {
             //this stack contains card1
             if (stack.getStackLeader().getDocker().compareCards(toInsertOn)) {
@@ -191,6 +194,9 @@ public class Logic {
         if (!move.hasMoves()) {
                 checkForMoves(moveLogic.findTalonMove(talon, stackArray, suit, move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit());
         }
+
+        //alternativeMove() { Move Found: Control if Move move Already Contains similar move move.Contain() Then Return null}
+
         System.out.println("Move Combination Found: " + move);
         listOfMoves.add(move);
     }
