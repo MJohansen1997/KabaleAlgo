@@ -3,6 +3,7 @@ import java.util.LinkedList;
 //The block class act's as an container of cards that are linked up could be H5 S6, D7, C8 etc.
 public class Block {
     private final LinkedList<Card> block;
+    private LinkedList<Card> subBlock;
 
     public Block(LinkedList<Card> block) {
         this.block = block;
@@ -51,5 +52,17 @@ public class Block {
      * so if a block contains S7 and H8, S/ would be the docker of the block*/
     public Card getDocker() {
         return block.peekLast();
+    }
+
+    public LinkedList<Card> splitedBlock(Block block, Card card) {
+        for (int i = 0; i < block.getBlock().size(); i++) {
+            if (block.getBlock().get(i).compareCards(card)){
+                subBlock.add(card);
+                for (int j = i ; j < block.getBlock().size(); j++) {
+                    subBlock.add(card);
+                }
+            }
+        }
+        return subBlock;
     }
 }

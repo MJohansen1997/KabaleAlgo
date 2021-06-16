@@ -10,10 +10,11 @@ public class Logic {
     MoveLogic moveLogic = new MoveLogic();
     Talon talons;
     ArrayList<BuildStack> board = new ArrayList<>();
+    BuildStackHolder buildStackHolder;
 
     /**The method called to run the algorithm*/
     public void run() {
-        BuildStackHolder buildStackHolder = new BuildStackHolder(board);
+        buildStackHolder = new BuildStackHolder(board);
         Suit suits = new Suit();
         Move move = new Move();
 
@@ -88,6 +89,16 @@ public class Logic {
         }
     }
 
+    public void insertSubBlock(Card toInsertOn, BuildStackHolder stacks) {
+        for (BuildStack stack : stacks.getStackList()) {
+            //this stack contains card1
+            if (stack.getStackLeader().getDocker().compareCards(toInsertOn)) {
+                stack.getStackLeader().splitedBlock(stack.getStackLeader(), toInsertOn);
+                return;
+            }
+        }
+    }
+
     /** This method is used to remove a card by calling the different classes remove card functions
      * @param card The card to be removed
      * @param stacks The stack which the operation should be done on
@@ -125,13 +136,18 @@ public class Logic {
     public void performMove(Move movesToPerform, BuildStackHolder stacks, Talon talon, Suit suit) {
         if (movesToPerform.hasMoves()) {
             LinkedList<Card> cardsToMove = movesToPerform.getSimMoves();
+            Block block = new Block();
             Card card1 = cardsToMove.poll();
             Card card2 = cardsToMove.poll();
             if (card1 == card2)
                 turnCard(card1, stacks);
             else {
                 removeCard(card1, stacks, talon, suit);
-                insertCard(card1, card2, stacks, suit);
+                if (block.getBlock().size()>1)
+                    //misforstået
+                    insertSubBlock(card1,stacks);
+                else
+                    insertCard(card1, card2, stacks, suit);
             }
         }
     }
@@ -195,5 +211,16 @@ public class Logic {
             board.add(new BuildStack(blocks));
             board.get(i).setIndex(i);
         }
+    }
+
+    public int amountOfUnturnedCards(){
+
+        int amountOfFaceDownCard = 0;
+
+        for (int i = 0; i < buildStackHolder.getStackList().size(); i++) {
+            if(buildStackHolder.getStackList().get(i).getStackLeader().getLeader().getType()==Type.Unturned)
+                amountOfFaceDownCard+=1;
+        }
+        return amountOfFaceDownCard;
     }
 }
