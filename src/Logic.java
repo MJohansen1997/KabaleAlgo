@@ -32,9 +32,8 @@ public class Logic {
         ArrayList<Card> deckCards = new ArrayList<>();
         ArrayList<Card> cards = new ArrayList<>();
 
-        setUpTestForKing(deckCards, cards);
-//        setUpStandard(deckCards, cards);
-
+//        setUpTestForKing(deckCards, cards);
+        setUpStandard(deckCards, cards);
 
     }
 
