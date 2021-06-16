@@ -21,7 +21,7 @@ public class BuildStackHolder {
 
     public boolean removeBlock(Card card){
         for(BuildStack stack : stacks) {
-            if(!(stack.getStackLeader().removeAlternativeMove(card) == null))
+            if(!(stack.getStackLeader().removeBlock(card) == null))
                 return true;
         }
         return false;

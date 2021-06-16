@@ -73,7 +73,7 @@ public class Block {
         return block.peekLast();
     }
 
-    public Block removeAlternativeMove(Card card) {
+    public Block removeBlock(Card card) {
         Block list = this;
         Block newBlock;
         LinkedList<Card> listOfCards = list.getBlock();
