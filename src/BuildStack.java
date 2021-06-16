@@ -48,28 +48,25 @@ public class BuildStack {
 
     /** This method is used to remove a card from a stack
      * @param card is the card you want to remove from the stack*/
-    public boolean removeCard(Card card) {
+    public Block removeCard(Card card) {
         //this stack contains card1
         int index = this.getStackLeader().blockContainsIndex(card);
-        if (index == 0) {
-            this.getStack().remove(this.getStackLeader());
-            return true;
-        }
-        else if (index == this.getStack().size()-1) {
-            this.getStackLeader().getBlock().remove(card);
-            return true;
-        }
-        else if (index != -1) {
+        if (index != -1) {
             //if the card isn't in leader position or docker position
             //then we need to move multiple cards.
-            return true;
+            Block tempBlock = this.getStackLeader().removeBlock(index);
+            if (index == 0)
+                this.getStack().remove(this.getStackLeader());
+            return tempBlock;
         }
         else
-            return false;
+            return null;
     }
 
     public LinkedList<Card> getAllCardsFromLeadStack(BuildStack stack) {
         LinkedList<Card> allCardsInStack = stack.getStackLeader().getBlock();
         return allCardsInStack;
     }
+
+
 }

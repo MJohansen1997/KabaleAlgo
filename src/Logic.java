@@ -10,7 +10,7 @@ public class Logic {
     MoveLogic moveLogic = new MoveLogic();
     Talon talons;
     ArrayList<BuildStack> board = new ArrayList<>();
-    Block alternativeBlock = new Block();
+    Block alternativeBlock;
     BuildStackHolder buildStackHolder;
 
     /**The method called to run the algorithm*/
@@ -111,10 +111,11 @@ public class Logic {
      * @param suit The suit which the operation should be done on*/
     public void removeCard(Card card, BuildStackHolder stacks, Talon talon, Suit suit) {
         //checks if the card we want removed is in one of the build stacks if it is we remove it
-        if (stacks.removeCard(card)) {}
+        alternativeBlock = stacks.removeBlock(card);
+        if (alternativeBlock!=null) {}
+
             //checks if the card we want removed is in the talon if it is we remove it
         else if (talon.removeCard(card)) {}
-        else if (stacks.removeBlock(card)) {}
         else
             //else we will attempt to remove the card from the suit in case none of the other options contained the card
             suit.removeCard(card);

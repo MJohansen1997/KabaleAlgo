@@ -86,15 +86,15 @@ public class Block {
         return subBlock;
     }
 
-    public Block removeBlock(Card card) {
+    public Block removeBlock(int index) {
         Block list = this;
         Block newBlock;
         LinkedList<Card> listOfCards = list.getBlock();
-        int index = list.blockContainsIndex(card);
 
         if(index == -1){
             return null;
-        } else {
+        }
+        else {
             newBlock = (Block) listOfCards.subList(index, listOfCards.size() - 1);
         }
         for (int i = index; i < listOfCards.size(); i++) {
