@@ -1,9 +1,12 @@
 import Enums.Type;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 //this class contain all the logic of how cards can be moved and the scoring of the moves
 public class MoveLogic {
+    LinkedList<Card> alreadyContained = new LinkedList<>();
     /** This method checks if two cards have different colours
      * @param card1 First card to compare
      * @param card2 second card to compare
@@ -122,4 +125,28 @@ public class MoveLogic {
         }
         return null;
     }
+
+    public Move findAlternativeStackMove(ArrayList<BuildStack> stacks, Move move){
+        for (int i = 0; i < 7; i++) {
+            LinkedList<Card> blockOfCards = stacks.get(i).getStackLeader().getBlock();
+            for (int j = i+1; j < 7; j++) {
+                Card dockerCard = stacks.get(j).getStackLeader().getDocker();
+                for (int k = 0; k < blockOfCards.size(); k++) {
+                    Card compareWithCard = blockOfCards.get(k);
+                    if(checkLegalMove(compareWithCard, dockerCard)){
+                        if(!compareWithCard.compareAlreadyContained(alreadyContained, dockerCard)){
+                            alreadyContained.addAll(compareWithCard.addCardsToContain(alreadyContained, dockerCard));
+                            return move.addMove(0, compareWithCard, dockerCard);
+                        }
+                       }
+                }
+                }
+            }
+        return null;
+    }
+
+
+
+
 }
+

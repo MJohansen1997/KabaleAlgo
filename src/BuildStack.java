@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.Stack;
 
 /**The Buildstack acts as an container for our blocks, which provides methods to access the blocks */
 public class BuildStack {
@@ -51,7 +50,7 @@ public class BuildStack {
      * @param card is the card you want to remove from the stack*/
     public boolean removeCard(Card card) {
         //this stack contains card1
-        int index = this.getStackLeader().blockContains(card);
+        int index = this.getStackLeader().blockContainsIndex(card);
         if (index == 0) {
             this.getStack().remove(this.getStackLeader());
             return true;
@@ -67,5 +66,10 @@ public class BuildStack {
         }
         else
             return false;
+    }
+
+    public LinkedList<Card> getAllCardsFromLeadStack(BuildStack stack) {
+        LinkedList<Card> allCardsInStack = stack.getStackLeader().getBlock();
+        return allCardsInStack;
     }
 }
