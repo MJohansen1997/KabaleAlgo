@@ -2,6 +2,7 @@ import Enums.Type;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Scanner;
 
 /** This Class contains all the logic around the running of the algorithm */
 public class Logic {
@@ -10,11 +11,12 @@ public class Logic {
     MoveLogic moveLogic = new MoveLogic();
     Talon talons;
     ArrayList<BuildStack> board = new ArrayList<>();
+    BuildStackHolder buildStackHolder;
+    Suit suits = new Suit();
 
     /**The method called to run the algorithm*/
     public void run() {
-        BuildStackHolder buildStackHolder = new BuildStackHolder(board);
-        Suit suits = new Suit();
+        listOfMoves = new ArrayList<>();
         Move move = new Move();
 
         checkForMoves(move, buildStackHolder, talons, suits);
@@ -23,8 +25,19 @@ public class Logic {
             if (max.point < maxCheck.point) {
                 max = maxCheck;
             }
+            if (max.point == maxCheck.point) {
+                if (max.moveList.size() > maxCheck.moveList.size()) {
+                    max = maxCheck;
+                }
+            }
         }
+        if (max.moveList.size() == 0)
+            return;
+
         System.out.println("Max: " + max);
+        performPermanentMoves(max);
+        insertEmpties();
+        run();
     }
 
     /**  For now a method for setting up the game hardcoded #Todo Should make this automated and not hardcoded*/
@@ -38,39 +51,39 @@ public class Logic {
     }
 
     private void setUpStandard(ArrayList<Card> deckCards, ArrayList<Card> cards) {
-        cards.add(new Card(true, 13, Type.Heart));
-        cards.add(new Card(true, 10, Type.Heart));
-        cards.add(new Card(true, 6, Type.Spade));
+        cards.add(new Card(true, 8, Type.Spade));
+        cards.add(new Card(true, 11, Type.Spade));
+        cards.add(new Card(true, 2, Type.Clover));
         cards.add(new Card(true, 10, Type.Diamond));
-        cards.add(new Card(true, 10, Type.Spade));
-        cards.add(new Card(true, 13, Type.Clover));
-        cards.add(new Card(true, 5, Type.Diamond));
+        cards.add(new Card(true, 7, Type.Clover));
+        cards.add(new Card(true, 12, Type.Diamond));
+        cards.add(new Card(true, 9, Type.Diamond));
         setUpStacks(cards);
 
-        deckCards.add(new Card(true, 1, Type.Heart));
-        deckCards.add(new Card(true, 11, Type.Diamond));
-        deckCards.add(new Card(true, 12, Type.Diamond));
-        deckCards.add(new Card(true, 11, Type.Spade));
-        deckCards.add(new Card(true, 11, Type.Clover));
-        deckCards.add(new Card(true, 6, Type.Diamond));
-        deckCards.add(new Card(true, 12, Type.Spade));
-        deckCards.add(new Card(true, 8, Type.Spade));
-        deckCards.add(new Card(true, 3, Type.Spade));
-        deckCards.add(new Card(true, 3, Type.Clover));
-        deckCards.add(new Card(true, 8, Type.Clover));
-        deckCards.add(new Card(true, 9, Type.Spade));
-        deckCards.add(new Card(true, 7, Type.Diamond));
-        deckCards.add(new Card(true, 4, Type.Diamond));
-        deckCards.add(new Card(true, 5, Type.Clover));
-        deckCards.add(new Card(true, 7, Type.Heart));
-        deckCards.add(new Card(true, 2, Type.Heart));
-        deckCards.add(new Card(true, 12, Type.Heart));
-        deckCards.add(new Card(true, 13, Type.Spade));
-        deckCards.add(new Card(true, 4, Type.Spade));
+        deckCards.add(new Card(true, 1, Type.Spade));
+        deckCards.add(new Card(true, 1, Type.Diamond));
         deckCards.add(new Card(true, 6, Type.Clover));
-        deckCards.add(new Card(true, 4, Type.Heart));
-        deckCards.add(new Card(true, 8, Type.Heart));
-        deckCards.add(new Card(true, 12, Type.Clover));
+        deckCards.add(new Card(true, 5, Type.Diamond));
+        deckCards.add(new Card(true, 11, Type.Clover));
+        deckCards.add(new Card(true, 7, Type.Spade));
+        deckCards.add(new Card(true, 1, Type.Heart));
+        deckCards.add(new Card(true, 5, Type.Clover));
+        deckCards.add(new Card(true, 1, Type.Clover));
+        deckCards.add(new Card(true, 3, Type.Diamond));
+        deckCards.add(new Card(true, 6, Type.Spade));
+        deckCards.add(new Card(true, 7, Type.Diamond));
+        deckCards.add(new Card(true, 4, Type.Clover));
+        deckCards.add(new Card(true, 10, Type.Spade));
+        deckCards.add(new Card(true, 10, Type.Heart));
+        deckCards.add(new Card(true, 2, Type.Spade));
+        deckCards.add(new Card(true, 5, Type.Spade));
+        deckCards.add(new Card(true, 3, Type.Spade));
+        deckCards.add(new Card(true, 8, Type.Diamond));
+        deckCards.add(new Card(true, 4, Type.Diamond));
+        deckCards.add(new Card(true, 11, Type.Heart));
+        deckCards.add(new Card(true, 5, Type.Heart));
+        deckCards.add(new Card(true, 12, Type.Spade));
+        deckCards.add(new Card(true, 3, Type.Heart));
         talons = new Talon(deckCards);
     }
 
@@ -120,7 +133,7 @@ public class Logic {
      * @param toInsertOn The targeted card we want our toInsert card inserted onto
      * @param stacks The stack which this operation should be done on
      * @param suit The suit which this operation should be done on*/
-    public void insertCard(Card toInsert, Card toInsertOn, BuildStackHolder stacks, Suit suit) {
+    public void insertCard(Block toInsert, Card toInsertOn, BuildStackHolder stacks, Suit suit) {
         //First Check If toInsert is Leader If True insert whole block on toInsertOn's Block
         //If False, and toInsert isn't a Docker, Create new Sublist a New Block from toInsert's Index and remove
         //said sublist from the old block
@@ -131,42 +144,37 @@ public class Logic {
             }
 
             //this stack contains card1
+            if (stack.getStack().size() == 0)
+                continue;
             if (stack.getStackLeader().getDocker().compareCards(toInsertOn)) {
-                stack.getStackLeader().getBlock().add(toInsert);
+                stack.getStackLeader().getBlock().addAll(toInsert.getBlock());
                 return;
             }
         }
         if (suit.getSuit(toInsertOn.getType().getValue()).contains(toInsertOn)) {
-            suit.getSuit(toInsertOn.getType().getValue()).add(toInsert);
+            suit.getSuit(toInsertOn.getType().getValue()).addAll(toInsert.getBlock());
         }
     }
 
     /** This method is used to remove a card by calling the different classes remove card functions
      * @param card The card to be removed
      * @param stacks The stack which the operation should be done on
-     * @param  talon The talon which the operation should be done on
+     * @param talon The talon which the operation should be done on
      * @param suit The suit which the operation should be done on*/
-    public void removeCard(Card card, BuildStackHolder stacks, Talon talon, Suit suit) {
+    public Block removeCard(Card card, BuildStackHolder stacks, Talon talon, Suit suit) {
         //checks if the card we want removed is in one of the build stacks if it is we remove it
-        if (stacks.removeCard(card)) { }
-            //checks if the card we want removed is in the talon if it is we remove it
-        else if (talon.removeCard(card)) {}
-        else
-            //else we will attempt to remove the card from the suit in case none of the other options contained the card
-            suit.removeCard(card);
-    }
-
-    /** This method simply just finds the stack of the card that need to be turned and set's the face up value of the
-     * card to true
-     * @param card The card which we want turned
-     * @param stacks The stacks which this operation should be done on*/
-    public void turnCard(Card card, BuildStackHolder stacks) {
-        for (BuildStack stack : stacks.getStackList()) {
-            //this stack contains card1
-            if (stack.getStackLeader().blockContains(card) != -1) {
-                stack.getStackLeader().getLeader().setFaceUp();
-            }
+        Block temp;
+        temp = stacks.removeBlock(card);
+        if (temp != null)
+            return temp;
+        //checks if the card we want removed is in the talon if it is we remove it
+        temp = talon.removeCard(card);
+        if (temp != null) {
+            return temp;
         }
+        //else we will attempt to remove the card from the suit in case none of the other options contained the card
+        temp = suit.removeCard(card);
+        return temp;
     }
 
     /** This method is used to virtually perform the move found in the earlier iteration so the algorithm can
@@ -175,16 +183,36 @@ public class Logic {
      * @param stacks The stacks which the moves need to be performed on
      * @param talon The talon which the moves need to be performed on
      * @param suit The suit which the moves need to be performed on*/
-    public void performMove(Move movesToPerform, BuildStackHolder stacks, Talon talon, Suit suit) {
+    public void performSimMove(Move movesToPerform, BuildStackHolder stacks, Talon talon, Suit suit) {
         if (movesToPerform.hasMoves()) {
             LinkedList<Card> cardsToMove = movesToPerform.getSimMoves();
             Card card1 = cardsToMove.poll();
             Card card2 = cardsToMove.poll();
-            if (card1 == card2)
-                turnCard(card1, stacks);
-            else {
-                removeCard(card1, stacks, talon, suit);
-                insertCard(card1, card2, stacks, suit);
+            //Inserts and Removes the card from original location to it's new location
+            insertCard(removeCard(card1, stacks, talon, suit), card2, stacks, suit);
+        }
+    }
+    public void performPermanentMoves(Move movesToPerform){
+        LinkedList<Card> cardsToMove = movesToPerform.moveList;
+        while (cardsToMove.size() > 0){
+            Card card1 = cardsToMove.poll();
+            Card card2 = cardsToMove.poll();
+            if (card1.compareCards(card2))
+                continue;
+            insertCard(removeCard(card1, buildStackHolder, talons, suits), card2, buildStackHolder, suits);
+        }
+        System.out.println("done");
+    }
+    public void insertEmpties(){
+        for (BuildStack stacks : buildStackHolder.getStackList()) {
+            Block stackLeader = stacks.getStackLeader();
+            if (stackLeader == null)
+                continue;
+            Card card = stackLeader.getLeader();
+            if (card.getType() == Type.Unturned) {
+                Scanner scanner = new Scanner(System.in);
+                System.out.println("insert card from row : " + stacks.getIndex());
+                card.setFaceUp(scanner.nextInt(), scanner.nextInt());
             }
         }
     }
@@ -194,22 +222,31 @@ public class Logic {
      * @param holder The Build Stack list which contains all the build stacks
      * @param talon The talon to be used through the different iterations of the algorithm
      * @param suit The suit to be used through the different iterations of the algorithm
-     * */
+     **/
     public void checkForMoves(Move move, BuildStackHolder holder, Talon talon, Suit suit) {
         //checks if the move sent on was null if that's the cast we can go no longer in this part of the route
         if (move == null)
             return;
         //we simulate the performing of moves contained in the move chain list
-        performMove(move, holder, talon, suit);
+        performSimMove(move, holder, talon, suit);
         ArrayList<BuildStack> stackArray = holder.getStackList();
         //checks the board for internal moves
         for (int i = 0; i < 7; i++) {
+            if (stackArray.get(i).getStack().size() == 0)
+                continue;
             //checking for moves from the stack that can lead to card being inserted into the suit
             checkForMoves(moveLogic.checkStackToSuit(suit, stackArray.get(i), move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit());
             for (int j = i + 1; j < 7; j++) {
                 //Checking for possible moves internally between the stacks
                 checkForMoves(moveLogic.checkInternalStackMove(holder, stackArray.get(i), stackArray.get(j), move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit());
             }
+        }
+
+        if (!move.hasMoves()) {
+            //checks for deck moves as the last thing
+            checkForMoves(moveLogic.findTalonMove(talon, stackArray, suit, move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit());
+            //System.out.println("Move combination alternative move" + moveLogic.findAlternativeStackMove(stackArray, move));
+            checkForMoves(moveLogic.findAlternativeStackMove(stackArray,move),holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit());
         }
 
         //checks for unturned cards
@@ -220,24 +257,18 @@ public class Logic {
         //if the algorithm found unturned cards we instantly ask the algorithm to stop searching on
         if (temp.hasMoves()) {
             move.add(temp);
-            System.out.println("Move Combination Found: " + move);
+            //System.out.println("Move Combination Found: " + move);
             listOfMoves.add(move);
             return;
         }
-        //checks for deck moves as the last thing
-        if (!move.hasMoves()) {
-                checkForMoves(moveLogic.findTalonMove(talon, stackArray, suit, move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit());
-        }
 
-        //alternativeMove() { Move Found: Control if Move move Already Contains similar move move.Contain() Then Return null}
-
-        System.out.println("Move Combination Found: " + move);
+        //System.out.println("Move Combination Found: " + move);
         listOfMoves.add(move);
     }
 
     /** This method simply setup all the stacks with their cards turned and unturned
      * @param cards the List of cards going into the build stacks*/
-    private void setUpStacks(ArrayList<Card> cards) {
+    public void setUpStacks(ArrayList<Card> cards) {
         for (int i = 0; i <= 6; i++) {
             ArrayList<Block> blocks = new ArrayList<>();
             for (int j = i; j > 0; j--) {
@@ -246,6 +277,11 @@ public class Logic {
                 blocks.add(new Block(temp));
             }
             LinkedList<Card> temp = new LinkedList<>();
+            temp.add(cards.get(i));
+            blocks.add(new Block(temp));
+            board.add(new BuildStack(blocks));
+            board.get(i).setIndex(i);
+            buildStackHolder = new BuildStackHolder(board);
 
             if(cards.get(i).getFaceValue() == 0) {
                 /* TODO SÅLEDES AT KONGE RYK KAN TESTES*/
@@ -261,5 +297,16 @@ public class Logic {
             }
 
         }
+    }
+
+    public int amountOfUnturnedCards(){
+
+        int amountOfFaceDownCard = 0;
+
+        for (int i = 0; i < buildStackHolder.getStackList().size(); i++) {
+            if(buildStackHolder.getStackList().get(i).getStackLeader().getLeader().getType()==Type.Unturned)
+                amountOfFaceDownCard+=1;
+        }
+        return amountOfFaceDownCard;
     }
 }

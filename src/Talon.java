@@ -19,14 +19,16 @@ public class Talon {
     }
 
     /** This method looks to attempt to remove a card from the talon/deck*/
-    public boolean removeCard(Card card) {
+    public Block removeCard(Card card) {
         for (Card deckCard : deck) {
             if (deckCard.compareCards(card)) {
                 deck.remove(deckCard);
-                return true;
+                Block temp = new Block();
+                temp.getBlock().add(card);
+                return temp;
             }
         }
-        return false;
+        return null;
     }
 
 }

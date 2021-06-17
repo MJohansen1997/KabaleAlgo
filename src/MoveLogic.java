@@ -1,24 +1,21 @@
 import Enums.Type;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 //this class contain all the logic of how cards can be moved and the scoring of the moves
 public class MoveLogic {
-    /**
-     * This method checks if two cards have different colours
-     *
+    LinkedList<Card> alreadyContained = new LinkedList<>();
+    /** This method checks if two cards have different colours
      * @param card1 First card to compare
      * @param card2 second card to compare
-     *              Returns true if they have different colours and False if they got the same colour
-     */
+     * Returns true if they have different colours and False if they got the same colour*/
     private boolean colourDiff(Card card1, Card card2) {
         return card1.getColour() != card2.getColour();
     }
 
-    /**
-     * This method checks if a card can be moved into it's suit
-     */
+    /** This method checks if a card can be moved into it's suit*/
     private boolean suitCheck(Card moveCard, Suit suit) {
         //gets the top card of the suit that contains that cards type
         Card toCard = suit.getTop(moveCard.getType().getValue());
@@ -26,23 +23,17 @@ public class MoveLogic {
         return (moveCard.getFaceValue() - toCard.getFaceValue() == 1);
     }
 
-    /**
-     * The stackCheck method checks if a card is stackable with another card which would mean they only have a value
+    /**The stackCheck method checks if a card is stackable with another card which would mean they only have a value
      * difference of 1
-     *
-     * @param moveCard The card we want to move
-     * @param toCard   The card which we want to move onto
-     */
+     * @param moveCard  The card we want to move
+     * @param toCard  The card which we want to move onto*/
     private boolean stackCheck(Card moveCard, Card toCard) {
         return (toCard.getFaceValue() - moveCard.getFaceValue() == 1);
     }
 
-    /**
-     * This method checks if moving a card to a certain other card is a legal move
-     *
+    /** This method checks if moving a card to a certain other card is a legal move
      * @param moveCard The card we want to move
-     * @param toCard   The card we want to move the other card onto
-     */
+     * @param toCard The card we want to move the other card onto*/
     private boolean checkLegalMove(Card moveCard, Card toCard) {
         //checks that neither of the cards is of type unturned which for the algorithm means it's a unknown card
         if (moveCard.getType() == Type.Unturned || toCard.getType() == Type.Unturned)
@@ -91,20 +82,20 @@ public class MoveLogic {
      * This method checks if a stack contains an unturned card
      *
      * @param stack The stack that we searches through
-     * @param move  The Move object we want the possible turn move inserted to
-     */
+     * @param move The Move object we want the possible turn move inserted to*/
     public Move unTurnedCard(BuildStack stack, Move move) {
         //checks if the front card aka leader of a stacks leader block is a unturned card
-        if (!stack.getStackLeader().getLeader().isFaceUp()) {
+        Block temp = stack.getStackLeader();
+        if (temp == null)
+            return move;
+        if (temp.getLeader().getType() == Type.Unturned) {
 //                System.out.println("Unturned card found at: " + stack.getIndex() + " : " + stack.getStackLeader().block.indexOf(stack.getStackLeader().getLeader()));
             return move.addMove(1 + (stack.getStack().size()), stack.getStackLeader().getLeader(), stack.getStackLeader().getLeader());
         }
         return move;
     }
 
-    /**
-     * This method searches for a possible card which could be added to the suit
-     */
+    /** This method searches for a possible card which could be added to the suit*/
     public Move checkStackToSuit(Suit suit, BuildStack stack, Move move) {
         //gets the stack leaders, docker aka front card
         Card frontCard = stack.getStackLeader().getDocker();
@@ -122,6 +113,8 @@ public class MoveLogic {
     public Move checkInternalStackMove(BuildStackHolder holder, BuildStack stack1, BuildStack stack2, Move move) {
         Block block1 = stack1.getStackLeader();
         Block block2 = stack2.getStackLeader();
+        if (block1 == null || block2 == null)
+            return null;
         Card block1Leader = block1.getLeader();
         Card block1Docker = block1.getDocker();
         Card block2Leader = block2.getLeader();
@@ -156,13 +149,10 @@ public class MoveLogic {
                 return move.addMove(100, block2Leader, block1Docker);
             }
         }
-        //checks if the leader and docker of the two blocks are a legal move
         return null;
     }
 
-    /**
-     * This method looks to find a move which can be made from the talon to either a suit or a build stack
-     */
+    /** This method looks to find a move which can be made from the talon to either a suit or a build stack*/
     public Move findTalonMove(Talon talon, ArrayList<BuildStack> stacks, Suit suit, Move move) {
 //        Card deckCard = talon.getDeck().get(index);
         for (Card deckCard : talon.getDeck()) {
@@ -176,7 +166,10 @@ public class MoveLogic {
             }
             //checks through each build stack if the card can be added to that stacks docker
             for (BuildStack stack : stacks) {
-                Card stackDocker = stack.getStackLeader().getDocker();
+                Block stackLeader = stack.getStackLeader();
+                if (stackLeader == null)
+                    continue;
+                Card stackDocker = stackLeader.getDocker();
 
                 /* CHANGE */
                 if(checkLegalMoveKing(deckCard, stack))
@@ -194,10 +187,38 @@ public class MoveLogic {
                     //card can be moved to the stack
 //                System.out.println("Legal Move Found: From Talon " + deckCard + " To " + stackDocker);
                     return move.addMove(1, deckCard, stackDocker);
-
                 }
             }
         }
         return null;
     }
+
+    public Move findAlternativeStackMove(ArrayList<BuildStack> stacks, Move move){
+        for (int i = 0; i < 7; i++) {
+            Block stackLeader = stacks.get(i).getStackLeader();
+            if (stackLeader == null)
+                continue;
+            LinkedList<Card> blockOfCards = stackLeader.getBlock();
+            for (int j = i+1; j < 7; j++) {
+                if (stacks.get(j).getStackLeader() == null)
+                    continue;
+                Card dockerCard = stacks.get(j).getStackLeader().getDocker();
+                for (int k = 0; k < blockOfCards.size(); k++) {
+                    Card compareWithCard = blockOfCards.get(k);
+                    if(checkLegalMove(compareWithCard, dockerCard)){
+                        if(!compareWithCard.compareAlreadyContained(alreadyContained, dockerCard)){
+                            alreadyContained.addAll(compareWithCard.addCardsToContain(alreadyContained, dockerCard));
+//                            System.out.println("Alternative Move found!");
+                            return move.addMove(0, compareWithCard, dockerCard);
+                        }
+                       }
+                }
+                }
+            }
+        return null;
+    }
+
+
+
+
 }
