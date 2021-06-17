@@ -54,39 +54,39 @@ public class Logic {
     }
 
     private void setUpStandard(ArrayList<Card> deckCards, ArrayList<Card> cards) {
-        cards.add(new Card(true, 4, Type.Clover));
-        cards.add(new Card(true, 13, Type.Clover));
-        cards.add(new Card(true, 2, Type.Heart));
-        cards.add(new Card(true, 4, Type.Diamond));
-        cards.add(new Card(true, 5, Type.Spade));
-        cards.add(new Card(true, 11, Type.Clover));
-        cards.add(new Card(true, 1, Type.Diamond));
+        cards.add(new Card(true, 12, Type.Clover));
+        cards.add(new Card(true, 7, Type.Clover));
+        cards.add(new Card(true, 1, Type.Spade));
+        cards.add(new Card(true, 7, Type.Spade));
+        cards.add(new Card(true, 6, Type.Heart));
+        cards.add(new Card(true, 10, Type.Clover));
+        cards.add(new Card(true, 3, Type.Clover));
         setUpStacks(cards);
 
-        deckCards.add(new Card(true, 6, 1));
-        deckCards.add(new Card(true, 5, 3));
         deckCards.add(new Card(true, 4, 2));
-        deckCards.add(new Card(true, 12, 0));
-        deckCards.add(new Card(true, 7, 3));
-        deckCards.add(new Card(true, 6, 0));
-        deckCards.add(new Card(true, 3, 1));
-        deckCards.add(new Card(true, 13, 2));
-        deckCards.add(new Card(true, 6, 2));
-        deckCards.add(new Card(true, 7, 2));
-        deckCards.add(new Card(true, 13, 1));
-        deckCards.add(new Card(true, 2, 0));
-        deckCards.add(new Card(true, 3, 2));
-        deckCards.add(new Card(true, 11, 3));
-        deckCards.add(new Card(true, 11, 2));
-        deckCards.add(new Card(true, 1, 0));
-        deckCards.add(new Card(true, 9, 2));
-        deckCards.add(new Card(true, 1, 2));
-        deckCards.add(new Card(true, 13, 3));
-        deckCards.add(new Card(true, 8, 0));
-        deckCards.add(new Card(true, 8, 1));
         deckCards.add(new Card(true, 2, 2));
-        deckCards.add(new Card(true, 8, 3));
+        deckCards.add(new Card(true, 5, 3));
+        deckCards.add(new Card(true, 11, 1));
+        deckCards.add(new Card(true, 2, 1));
+        deckCards.add(new Card(true, 12, 1));
+        deckCards.add(new Card(true, 13, 3));
+        deckCards.add(new Card(true, 11, 0));
         deckCards.add(new Card(true, 9, 3));
+        deckCards.add(new Card(true, 3, 2));
+        deckCards.add(new Card(true, 10, 3));
+        deckCards.add(new Card(true, 13, 0));
+        deckCards.add(new Card(true, 9, 1));
+        deckCards.add(new Card(true, 1, 3));
+        deckCards.add(new Card(true, 9, 0));
+        deckCards.add(new Card(true, 11, 3));
+        deckCards.add(new Card(true, 7, 1));
+        deckCards.add(new Card(true, 4, 3));
+        deckCards.add(new Card(true, 8, 2));
+        deckCards.add(new Card(true, 11, 2));
+        deckCards.add(new Card(true, 1, 1));
+        deckCards.add(new Card(true, 8, 3));
+        deckCards.add(new Card(true, 6, 0));
+        deckCards.add(new Card(true, 4, 1));
         talons = new Talon(deckCards);
     }
 

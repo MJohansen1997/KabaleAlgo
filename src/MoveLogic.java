@@ -183,13 +183,17 @@ public class MoveLogic {
             //checks through each build stack if the card can be added to that stacks docker
             for (BuildStack stack : stacks) {
                 Block stackLeader = stack.getStackLeader();
-                if (stackLeader == null)
-                    continue;
+                if (stackLeader == null) {
+                    /* CHANGE */
+                    if(checkLegalMoveKing(deckCard, stack, null)) {
+                        Move temporarily = checkKingMove(deckCard, stacks, move, false, talon);;
+                        if (temporarily != null)
+                            return temporarily;
+                    }
+                    else
+                        continue;
+                }
                 Card stackDocker = stackLeader.getDocker();
-
-                /* CHANGE */
-                if(checkLegalMoveKing(deckCard, stack, null))
-                    return checkKingMove(deckCard, stacks, move, false, talon);
 
                 //checks if the two card is a legal move
                 if (checkLegalMove(deckCard, stackDocker)) {
