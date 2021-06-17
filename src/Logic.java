@@ -35,9 +35,9 @@ public class Logic {
             return;
 
         System.out.println("Max: " + max);
-        performPermanentMoves(max);
-        insertEmpties();
-        run();
+//        performPermanentMoves(max);
+//        insertEmpties();
+//        run();
     }
 
     /**  For now a method for setting up the game hardcoded #Todo Should make this automated and not hardcoded*/
@@ -45,8 +45,8 @@ public class Logic {
         ArrayList<Card> deckCards = new ArrayList<>();
         ArrayList<Card> cards = new ArrayList<>();
 
-//        setUpTestForKing(deckCards, cards);
-        setUpStandard(deckCards, cards);
+        setUpTestForKing(deckCards, cards);
+//        setUpStandard(deckCards, cards);
 
     }
 
@@ -89,13 +89,13 @@ public class Logic {
 
     private void setUpTestForKing(ArrayList<Card> deckCards, ArrayList<Card> cards) {
 
+        cards.add(new Card(true, 9, Type.Heart));
         cards.add(new Card(true, 0, Type.Heart));
+        cards.add(new Card(true, 13, Type.Spade));
+        cards.add(new Card(true, 12, Type.Diamond));
         cards.add(new Card(true, 0, Type.Heart));
-        cards.add(new Card(true, 6, Type.Spade));
-        cards.add(new Card(true, 10, Type.Diamond));
-        cards.add(new Card(true, 10, Type.Spade));
+        cards.add(new Card(true, 2, Type.Diamond));
         cards.add(new Card(true, 13, Type.Clover));
-        cards.add(new Card(true, 5, Type.Diamond));
         setUpStacks(cards);
 
 
@@ -139,8 +139,9 @@ public class Logic {
         //said sublist from the old block
         for (BuildStack stack : stacks.getStackList()) {
             //if a stack is empty and we're trying to move a king. Create a new block with king card
-            if(toInsertOn == null && stack.isStackEmpty()) {
+            if(toInsertOn.getType() == Type.Empty && stack.isStackEmpty()) {
                 stack.getStack().add(new Block(toInsert));
+                return;
             }
 
             //this stack contains card1
@@ -232,11 +233,11 @@ public class Logic {
         ArrayList<BuildStack> stackArray = holder.getStackList();
         //checks the board for internal moves
         for (int i = 0; i < 7; i++) {
-            if (stackArray.get(i).getStack().size() == 0)
-                continue;
             //checking for moves from the stack that can lead to card being inserted into the suit
             checkForMoves(moveLogic.checkStackToSuit(suit, stackArray.get(i), move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit());
             for (int j = i + 1; j < 7; j++) {
+                if (stackArray.get(j).getStack().size() == 0)
+                    continue;
                 //Checking for possible moves internally between the stacks
                 checkForMoves(moveLogic.checkInternalStackMove(holder, stackArray.get(i), stackArray.get(j), move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit());
             }
@@ -245,7 +246,7 @@ public class Logic {
         if (!move.hasMoves()) {
             //checks for deck moves as the last thing
             checkForMoves(moveLogic.findTalonMove(talon, stackArray, suit, move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit());
-            //System.out.println("Move combination alternative move" + moveLogic.findAlternativeStackMove(stackArray, move));
+//            System.out.println("Move combination alternative move" + moveLogic.findAlternativeStackMove(stackArray, move));
             checkForMoves(moveLogic.findAlternativeStackMove(stackArray,move),holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit());
         }
 
@@ -257,12 +258,12 @@ public class Logic {
         //if the algorithm found unturned cards we instantly ask the algorithm to stop searching on
         if (temp.hasMoves()) {
             move.add(temp);
-            //System.out.println("Move Combination Found: " + move);
+            System.out.println("Move Combination Found: " + move);
             listOfMoves.add(move);
             return;
         }
 
-        //System.out.println("Move Combination Found: " + move);
+        System.out.println("Move Combination Found: " + move);
         listOfMoves.add(move);
     }
 
@@ -276,24 +277,22 @@ public class Logic {
                 temp.add(new Card(false));
                 blocks.add(new Block(temp));
             }
+
             LinkedList<Card> temp = new LinkedList<>();
-            temp.add(cards.get(i));
-            blocks.add(new Block(temp));
-            board.add(new BuildStack(blocks));
-            board.get(i).setIndex(i);
-            buildStackHolder = new BuildStackHolder(board);
+
 
             if(cards.get(i).getFaceValue() == 0) {
                 /* TODO SÅLEDES AT KONGE RYK KAN TESTES*/
-//                temp.add(new Card(true, 0,Type.Clover));
-                blocks.add(new Block(temp));
-                board.add(new BuildStack(blocks));
+
+                board.add(new BuildStack());
                 board.get(i).setIndex(i);
+                buildStackHolder = new BuildStackHolder(board);
             } else {
                 temp.add(cards.get(i));
                 blocks.add(new Block(temp));
                 board.add(new BuildStack(blocks));
                 board.get(i).setIndex(i);
+                buildStackHolder = new BuildStackHolder(board);
             }
 
         }

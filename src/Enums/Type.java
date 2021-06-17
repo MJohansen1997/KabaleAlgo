@@ -5,7 +5,8 @@ public enum Type {
     Spade(2, "♠️"),
     Heart(1, "♥️"),
     Diamond(3, "♦️"),
-    Unturned(-1,"?");
+    Unturned(-1,"?"),
+    Empty(-2,"⚠️");
 
     private final int value;
     private final String string;

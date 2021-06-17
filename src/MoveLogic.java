@@ -1,7 +1,9 @@
 import Enums.Type;
+import sun.rmi.runtime.Log;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.logging.*;
 import java.util.List;
 
 //this class contain all the logic of how cards can be moved and the scoring of the moves
@@ -43,39 +45,35 @@ public class MoveLogic {
     }
 
     /* TODO */
-    private boolean checkLegalMoveKing(Card kingCard, BuildStack stack) {
-        return (stack.isStackEmpty() && kingCard.getFaceValue() == 13);
+    private boolean checkLegalMoveKing(Card kingCard, BuildStack toStack, BuildStack kingStack) {
+        return (toStack.isStackEmpty() && kingCard.getFaceValue() == 13 && (kingStack == null || kingStack.getStack().size() > 1));
     }
 
     /*CHANGE*/
-    private ArrayList<Card> searchForMatchingQueen(Card kingCard, ArrayList<BuildStack> allStacks) {
-        ArrayList<Card> test = new ArrayList<>();
-
+    /* Should prioritize stacks queens over talon */
+    private Card searchForMatchingQueen(Card kingCard, ArrayList<BuildStack> allStacks) {
         for (BuildStack stack : allStacks) {
-            Card stackLeader = stack.getStackLeader().getLeader();
-            Card stackDocker = stack.getStackLeader().getDocker();
+            if(stack.getStack().size() == 0)
+                continue;
 
+            Card stackLeader = stack.getStackLeader().getLeader();
             if (stackLeader.getFaceValue() == 12 && colourDiff(kingCard, stackLeader)) {
 //                return stackLeader;
-                test.add(stackLeader);
-            } else if (stackDocker.getFaceValue() == 12 && colourDiff(kingCard, stackDocker)) {
-//                return stackDocker;
-                test.add(stackLeader);
+                return stackLeader;
             }
         }
-//        return null;
-        return test;
+
+        return null;
     }
+
     /*TODO*/
-    public Move checkKingMove(Card king, BuildStack stack, ArrayList<BuildStack> allStacks, Move move) {
-        if (checkLegalMoveKing(king, stack)) {
-            ArrayList<Card> test = searchForMatchingQueen(king, allStacks);
-            if (!test.isEmpty()) {
-                /* Add move that kings needs to move to empty block */
-                return move.addMove(1,king,null);
-            }
+    public Move checkKingMove(Card king, ArrayList<BuildStack> allStacks, Move move) {
+        Card queen = searchForMatchingQueen(king, allStacks);
+        if (queen != null) {
+            /* Add move that kings needs to move to empty block */
+            return move.addMove(1, king, new Card(Type.Empty)).addMove(0, queen, king);
         }
-        return move;
+        return null;
     }
 
     /**
@@ -97,6 +95,10 @@ public class MoveLogic {
 
     /** This method searches for a possible card which could be added to the suit*/
     public Move checkStackToSuit(Suit suit, BuildStack stack, Move move) {
+        /*CHANGE*/
+        if (stack.getStack().size() == 0)
+            return null;
+
         //gets the stack leaders, docker aka front card
         Card frontCard = stack.getStackLeader().getDocker();
         if (suitCheck(frontCard, suit)) {
@@ -113,20 +115,25 @@ public class MoveLogic {
     public Move checkInternalStackMove(BuildStackHolder holder, BuildStack stack1, BuildStack stack2, Move move) {
         Block block1 = stack1.getStackLeader();
         Block block2 = stack2.getStackLeader();
-        if (block1 == null || block2 == null)
-            return null;
-        Card block1Leader = block1.getLeader();
-        Card block1Docker = block1.getDocker();
-        Card block2Leader = block2.getLeader();
-        Card block2Docker = block2.getDocker();
+        Card block1Leader;
+        Card block1Docker;
+        Card block2Leader;
+        Card block2Docker;
 
         /* CHANGE */
-        if (checkLegalMoveKing(block1Leader, stack2))
-            return checkKingMove(block1Leader, stack2, holder.getStackList(), move);
+        if (stack1.getStack().size() == 0) {
+            block2Leader = block2.getLeader();
+            if (checkLegalMoveKing(block2Leader, stack1, stack2))
+                return checkKingMove(block2Leader, holder.getStackList(), move);
+            else
+                return null;
+        }
 
-        /* CHANGE */
-        if (checkLegalMoveKing(block2Leader, stack1))
-            return checkKingMove(block2Leader, stack1, holder.getStackList(), move);
+        block1Leader = block1.getLeader();
+        block1Docker = block1.getDocker();
+        block2Leader = block2.getLeader();
+        block2Docker = block2.getDocker();
+
 
         if (checkLegalMove(block1Leader, block2Docker)) {
             //legal move was found between block1leader and block2docker which means block1 can be added too block2
@@ -172,15 +179,8 @@ public class MoveLogic {
                 Card stackDocker = stackLeader.getDocker();
 
                 /* CHANGE */
-                if(checkLegalMoveKing(deckCard, stack))
-                    return checkKingMove(deckCard, stack, stacks, move);
-//                if (checkLegalMoveKing(deckCard, stack)) {
-//                    ArrayList<Card> test = searchForMatchingQueen(deckCard, stacks);
-//                    if (!test.isEmpty()) {
-//                        /* Add move that kings needs to move to empty block */
-//                        return move.addMove(1, deckCard, null);
-//                    }
-//                }
+                if(checkLegalMoveKing(deckCard, stack, null))
+                    return checkKingMove(deckCard, stacks, move);
 
                 //checks if the two card is a legal move
                 if (checkLegalMove(deckCard, stackDocker)) {

@@ -30,6 +30,10 @@ public class Card {
         this.type = Type.Unturned;
     }
 
+    public Card(Type type) {
+        this.type = type;
+    }
+
     /**Cloning method for recursion purposes*/
     public Card cloneCard() {
         Card temp = new Card(false);
