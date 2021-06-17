@@ -60,6 +60,23 @@ public class Suit {
         return null;
     }
 
+    public boolean suitFinished() {
+        for (LinkedList<Card> suit : this.suitArray) {
+            if (suit.size() != 14)
+                return false;
+        }
+        return true;
+    }
+
+    public Card lowestSuit() {
+        Card temp = new Card(false);
+        for (LinkedList<Card> suit : this.suitArray) {
+            if (suit.peekLast().getFaceValue() < temp.getFaceValue())
+                temp = suit.peekLast();
+        }
+        return temp;
+    }
+
     public boolean suitContains(Card card) {
         return suitArray.get(card.getType().getValue()).peekLast().compareCards(card);
     }
