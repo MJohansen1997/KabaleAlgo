@@ -25,11 +25,11 @@ public class Logic {
             if (max.point < maxCheck.point) {
                 max = maxCheck;
             }
-            if (max.point == maxCheck.point) {
-                if (max.moveList.size() > maxCheck.moveList.size()) {
-                    max = maxCheck;
-                }
-            }
+//            if (max.point == maxCheck.point) {
+//                if (max.moveList.size() > maxCheck.moveList.size()) {
+//                    max = maxCheck;
+//                }
+//            }
         }
         if (max.moveList.size() == 0)
             return;
@@ -89,40 +89,19 @@ public class Logic {
 
     private void setUpTestForKing(ArrayList<Card> deckCards, ArrayList<Card> cards) {
 
-        cards.add(new Card(true, 9, Type.Heart));
+        cards.add(new Card(true, 0, Type.Heart));
         cards.add(new Card(true, 0, Type.Heart));
         cards.add(new Card(true, 13, Type.Spade));
         cards.add(new Card(true, 12, Type.Diamond));
         cards.add(new Card(true, 0, Type.Heart));
-        cards.add(new Card(true, 2, Type.Diamond));
-        cards.add(new Card(true, 13, Type.Clover));
+        cards.add(new Card(true, 0, Type.Diamond));
+        cards.add(new Card(true, 0, Type.Clover));
         setUpStacks(cards);
 
 
-        deckCards.add(new Card(true, 1, Type.Heart));
-        deckCards.add(new Card(true, 11, Type.Diamond));
-        deckCards.add(new Card(true, 12, Type.Diamond));
-        deckCards.add(new Card(true, 11, Type.Spade));
-        deckCards.add(new Card(true, 11, Type.Clover));
-        deckCards.add(new Card(true, 6, Type.Diamond));
-        deckCards.add(new Card(true, 12, Type.Spade));
-        deckCards.add(new Card(true, 8, Type.Spade));
-        deckCards.add(new Card(true, 3, Type.Spade));
-        deckCards.add(new Card(true, 3, Type.Clover));
-        deckCards.add(new Card(true, 8, Type.Clover));
-        deckCards.add(new Card(true, 9, Type.Spade));
-        deckCards.add(new Card(true, 7, Type.Diamond));
-        deckCards.add(new Card(true, 4, Type.Diamond));
-        deckCards.add(new Card(true, 5, Type.Clover));
-        deckCards.add(new Card(true, 7, Type.Heart));
-        deckCards.add(new Card(true, 2, Type.Heart));
         deckCards.add(new Card(true, 12, Type.Heart));
-        deckCards.add(new Card(true, 13, Type.Spade));
-        deckCards.add(new Card(true, 4, Type.Spade));
-        deckCards.add(new Card(true, 6, Type.Clover));
-        deckCards.add(new Card(true, 4, Type.Heart));
-        deckCards.add(new Card(true, 8, Type.Heart));
-        deckCards.add(new Card(true, 12, Type.Clover));
+        deckCards.add(new Card(true, 13, Type.Heart));
+
         talons = new Talon(deckCards);
     }
 
@@ -185,7 +164,7 @@ public class Logic {
      * @param talon The talon which the moves need to be performed on
      * @param suit The suit which the moves need to be performed on*/
     public void performSimMove(Move movesToPerform, BuildStackHolder stacks, Talon talon, Suit suit) {
-        if (movesToPerform.hasMoves()) {
+        while (movesToPerform.hasMoves()) {
             LinkedList<Card> cardsToMove = movesToPerform.getSimMoves();
             Card card1 = cardsToMove.poll();
             Card card2 = cardsToMove.poll();

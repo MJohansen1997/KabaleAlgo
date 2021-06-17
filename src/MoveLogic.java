@@ -1,9 +1,6 @@
 import Enums.Type;
-import sun.rmi.runtime.Log;
-
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.logging.*;
 import java.util.List;
 
 //this class contain all the logic of how cards can be moved and the scoring of the moves
@@ -67,8 +64,10 @@ public class MoveLogic {
     }
 
     /*TODO*/
-    public Move checkKingMove(Card king, ArrayList<BuildStack> allStacks, Move move) {
+    public Move checkKingMove(Card king, ArrayList<BuildStack> allStacks, Move move, boolean queenLess) {
         Card queen = searchForMatchingQueen(king, allStacks);
+        if (!queenLess)
+            return move.addMove(1, king, new Card(Type.Empty));
         if (queen != null) {
             /* Add move that kings needs to move to empty block */
             return move.addMove(1, king, new Card(Type.Empty)).addMove(0, queen, king);
@@ -123,8 +122,12 @@ public class MoveLogic {
         /* CHANGE */
         if (stack1.getStack().size() == 0) {
             block2Leader = block2.getLeader();
-            if (checkLegalMoveKing(block2Leader, stack1, stack2))
-                return checkKingMove(block2Leader, holder.getStackList(), move);
+            if (checkLegalMoveKing(block2Leader, stack1, stack2)){
+                if (block2Leader.compareCards(block2.getDocker()))
+                    return checkKingMove(block2Leader, holder.getStackList(), move, true);
+                else
+                    return checkKingMove(block2Leader, holder.getStackList(), move, false);
+            }
             else
                 return null;
         }
@@ -180,13 +183,13 @@ public class MoveLogic {
 
                 /* CHANGE */
                 if(checkLegalMoveKing(deckCard, stack, null))
-                    return checkKingMove(deckCard, stacks, move);
+                    return checkKingMove(deckCard, stacks, move, false);
 
                 //checks if the two card is a legal move
                 if (checkLegalMove(deckCard, stackDocker)) {
                     //card can be moved to the stack
 //                System.out.println("Legal Move Found: From Talon " + deckCard + " To " + stackDocker);
-                    return move.addMove(1, deckCard, stackDocker);
+                    return move.addMove(0, deckCard, stackDocker);
                 }
             }
         }
