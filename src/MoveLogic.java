@@ -48,7 +48,7 @@ public class MoveLogic {
 
     /*CHANGE*/
     /* Should prioritize stacks queens over talon */
-    private Card searchForMatchingQueen(Card kingCard, ArrayList<BuildStack> allStacks) {
+    private Card searchForMatchingQueen(Card kingCard, ArrayList<BuildStack> allStacks, Talon talon) {
         for (BuildStack stack : allStacks) {
             if(stack.getStack().size() == 0)
                 continue;
@@ -59,13 +59,19 @@ public class MoveLogic {
                 return stackLeader;
             }
         }
+        for (Card card : talon.deck) {
+            if (card.getFaceValue() == 12 && colourDiff(kingCard, card)) {
+//                return stackLeader;
+                return card;
+            }
+        }
 
         return null;
     }
 
     /*TODO*/
-    public Move checkKingMove(Card king, ArrayList<BuildStack> allStacks, Move move, boolean queenLess) {
-        Card queen = searchForMatchingQueen(king, allStacks);
+    public Move checkKingMove(Card king, ArrayList<BuildStack> allStacks, Move move, boolean queenLess, Talon talon) {
+        Card queen = searchForMatchingQueen(king, allStacks, talon);
         if (!queenLess)
             return move.addMove(1, king, new Card(Type.Empty));
         if (queen != null) {
@@ -111,7 +117,7 @@ public class MoveLogic {
     /**
      * This method searches for internal moves of cards between build stacks on the board
      */
-    public Move checkInternalStackMove(BuildStackHolder holder, BuildStack stack1, BuildStack stack2, Move move) {
+    public Move checkInternalStackMove(BuildStackHolder holder, BuildStack stack1, BuildStack stack2, Move move, Talon talon) {
         Block block1 = stack1.getStackLeader();
         Block block2 = stack2.getStackLeader();
         Card block1Leader;
@@ -124,9 +130,9 @@ public class MoveLogic {
             block2Leader = block2.getLeader();
             if (checkLegalMoveKing(block2Leader, stack1, stack2)){
                 if (block2Leader.compareCards(block2.getDocker()))
-                    return checkKingMove(block2Leader, holder.getStackList(), move, true);
+                    return checkKingMove(block2Leader, holder.getStackList(), move, true, talon);
                 else
-                    return checkKingMove(block2Leader, holder.getStackList(), move, false);
+                    return checkKingMove(block2Leader, holder.getStackList(), move, false, talon);
             }
             else
                 return null;
@@ -146,7 +152,7 @@ public class MoveLogic {
             if (size != 1) {
                 return move.addMove(0, block1Leader, block2Docker);
             } else {
-                return move.addMove(100, block1Leader, block2Docker);
+                return move.addMove(1, block1Leader, block2Docker);
             }
         } else if (checkLegalMove(block2Leader, block1Docker)) {
             //legal move was found between block2leader and block1docker which means block2 can be added too block1
@@ -156,7 +162,7 @@ public class MoveLogic {
             if (size != 1) {
                 return move.addMove(0, block2Leader, block1Docker);
             } else {
-                return move.addMove(100, block2Leader, block1Docker);
+                return move.addMove(1, block2Leader, block1Docker);
             }
         }
         return null;
@@ -183,7 +189,7 @@ public class MoveLogic {
 
                 /* CHANGE */
                 if(checkLegalMoveKing(deckCard, stack, null))
-                    return checkKingMove(deckCard, stacks, move, false);
+                    return checkKingMove(deckCard, stacks, move, false, talon);
 
                 //checks if the two card is a legal move
                 if (checkLegalMove(deckCard, stackDocker)) {
@@ -220,8 +226,4 @@ public class MoveLogic {
             }
         return null;
     }
-
-
-
-
 }

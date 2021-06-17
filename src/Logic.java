@@ -13,6 +13,7 @@ public class Logic {
     ArrayList<BuildStack> board = new ArrayList<>();
     BuildStackHolder buildStackHolder;
     Suit suits = new Suit();
+    int counter = 0;
 
     /**The method called to run the algorithm*/
     public void run() {
@@ -33,57 +34,59 @@ public class Logic {
         }
         if (max.moveList.size() == 0)
             return;
-
-        System.out.println("Max: " + max);
-//        performPermanentMoves(max);
-//        insertEmpties();
-//        run();
+        String testString = "Max: " + max;
+        System.out.println(testString);
+        //For testing purposes Only!
+//        if ( testString.equals("Max: Move{ 10 points [Card{9♣️}, Card{10♥️}, Card{8♥️}, Card{9♣️}, Card{6♠️}, Card{7♥️}, Card{5♥️}, Card{6♠️}, Card{4♣️}, Card{5♥️}, Card{0?}, Card{0?}, Card{0?}, Card{0?}]}"))
+//            System.out.println("yayet");
+        performPermanentMoves(max);
+        insertEmpties();
+        run();
     }
 
     /**  For now a method for setting up the game hardcoded #Todo Should make this automated and not hardcoded*/
     public void setUp() {
         ArrayList<Card> deckCards = new ArrayList<>();
         ArrayList<Card> cards = new ArrayList<>();
-
-        setUpTestForKing(deckCards, cards);
-//        setUpStandard(deckCards, cards);
+//        setUpTestForKing(deckCards, cards);
+        setUpStandard(deckCards, cards);
 
     }
 
     private void setUpStandard(ArrayList<Card> deckCards, ArrayList<Card> cards) {
-        cards.add(new Card(true, 8, Type.Spade));
-        cards.add(new Card(true, 11, Type.Spade));
-        cards.add(new Card(true, 2, Type.Clover));
-        cards.add(new Card(true, 10, Type.Diamond));
-        cards.add(new Card(true, 7, Type.Clover));
-        cards.add(new Card(true, 12, Type.Diamond));
-        cards.add(new Card(true, 9, Type.Diamond));
+        cards.add(new Card(true, 4, Type.Clover));
+        cards.add(new Card(true, 13, Type.Clover));
+        cards.add(new Card(true, 2, Type.Heart));
+        cards.add(new Card(true, 4, Type.Diamond));
+        cards.add(new Card(true, 5, Type.Spade));
+        cards.add(new Card(true, 11, Type.Clover));
+        cards.add(new Card(true, 1, Type.Diamond));
         setUpStacks(cards);
 
-        deckCards.add(new Card(true, 1, Type.Spade));
-        deckCards.add(new Card(true, 1, Type.Diamond));
-        deckCards.add(new Card(true, 6, Type.Clover));
-        deckCards.add(new Card(true, 5, Type.Diamond));
-        deckCards.add(new Card(true, 11, Type.Clover));
-        deckCards.add(new Card(true, 7, Type.Spade));
-        deckCards.add(new Card(true, 1, Type.Heart));
-        deckCards.add(new Card(true, 5, Type.Clover));
-        deckCards.add(new Card(true, 1, Type.Clover));
-        deckCards.add(new Card(true, 3, Type.Diamond));
-        deckCards.add(new Card(true, 6, Type.Spade));
-        deckCards.add(new Card(true, 7, Type.Diamond));
-        deckCards.add(new Card(true, 4, Type.Clover));
-        deckCards.add(new Card(true, 10, Type.Spade));
-        deckCards.add(new Card(true, 10, Type.Heart));
-        deckCards.add(new Card(true, 2, Type.Spade));
-        deckCards.add(new Card(true, 5, Type.Spade));
-        deckCards.add(new Card(true, 3, Type.Spade));
-        deckCards.add(new Card(true, 8, Type.Diamond));
-        deckCards.add(new Card(true, 4, Type.Diamond));
-        deckCards.add(new Card(true, 11, Type.Heart));
-        deckCards.add(new Card(true, 5, Type.Heart));
-        deckCards.add(new Card(true, 12, Type.Spade));
-        deckCards.add(new Card(true, 3, Type.Heart));
+        deckCards.add(new Card(true, 6, 1));
+        deckCards.add(new Card(true, 5, 3));
+        deckCards.add(new Card(true, 4, 2));
+        deckCards.add(new Card(true, 12, 0));
+        deckCards.add(new Card(true, 7, 3));
+        deckCards.add(new Card(true, 6, 0));
+        deckCards.add(new Card(true, 3, 1));
+        deckCards.add(new Card(true, 13, 2));
+        deckCards.add(new Card(true, 6, 2));
+        deckCards.add(new Card(true, 7, 2));
+        deckCards.add(new Card(true, 13, 1));
+        deckCards.add(new Card(true, 2, 0));
+        deckCards.add(new Card(true, 3, 2));
+        deckCards.add(new Card(true, 11, 3));
+        deckCards.add(new Card(true, 11, 2));
+        deckCards.add(new Card(true, 1, 0));
+        deckCards.add(new Card(true, 9, 2));
+        deckCards.add(new Card(true, 1, 2));
+        deckCards.add(new Card(true, 13, 3));
+        deckCards.add(new Card(true, 8, 0));
+        deckCards.add(new Card(true, 8, 1));
+        deckCards.add(new Card(true, 2, 2));
+        deckCards.add(new Card(true, 8, 3));
+        deckCards.add(new Card(true, 9, 3));
         talons = new Talon(deckCards);
     }
 
@@ -122,7 +125,6 @@ public class Logic {
                 stack.getStack().add(new Block(toInsert));
                 return;
             }
-
             //this stack contains card1
             if (stack.getStack().size() == 0)
                 continue;
@@ -131,7 +133,7 @@ public class Logic {
                 return;
             }
         }
-        if (suit.getSuit(toInsertOn.getType().getValue()).contains(toInsertOn)) {
+        if (suit.suitContains(toInsertOn)) {
             suit.getSuit(toInsertOn.getType().getValue()).addAll(toInsert.getBlock());
         }
     }
@@ -181,7 +183,7 @@ public class Logic {
                 continue;
             insertCard(removeCard(card1, buildStackHolder, talons, suits), card2, buildStackHolder, suits);
         }
-        System.out.println("done");
+        System.out.println("done : " + counter);
     }
     public void insertEmpties(){
         for (BuildStack stacks : buildStackHolder.getStackList()) {
@@ -218,7 +220,7 @@ public class Logic {
                 if (stackArray.get(j).getStack().size() == 0)
                     continue;
                 //Checking for possible moves internally between the stacks
-                checkForMoves(moveLogic.checkInternalStackMove(holder, stackArray.get(i), stackArray.get(j), move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit());
+                checkForMoves(moveLogic.checkInternalStackMove(holder, stackArray.get(i), stackArray.get(j), move, talon), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit());
             }
         }
 
@@ -237,12 +239,11 @@ public class Logic {
         //if the algorithm found unturned cards we instantly ask the algorithm to stop searching on
         if (temp.hasMoves()) {
             move.add(temp);
-            System.out.println("Move Combination Found: " + move);
+//            System.out.println("Move Combination Found: " + move);
             listOfMoves.add(move);
             return;
         }
-
-        System.out.println("Move Combination Found: " + move);
+//        System.out.println("Move Combination Found: " + move);
         listOfMoves.add(move);
     }
 
@@ -256,26 +257,39 @@ public class Logic {
                 temp.add(new Card(false));
                 blocks.add(new Block(temp));
             }
-
             LinkedList<Card> temp = new LinkedList<>();
+            temp.add(cards.get(i));
+            blocks.add(new Block(temp));
+            board.add(new BuildStack(blocks));
+            board.get(i).setIndex(i+1);
+            buildStackHolder = new BuildStackHolder(board);
 
-
-            if(cards.get(i).getFaceValue() == 0) {
-                /* TODO SÅLEDES AT KONGE RYK KAN TESTES*/
-
-                board.add(new BuildStack());
-                board.get(i).setIndex(i);
-                buildStackHolder = new BuildStackHolder(board);
-            } else {
-                temp.add(cards.get(i));
-                blocks.add(new Block(temp));
-                board.add(new BuildStack(blocks));
-                board.get(i).setIndex(i);
-                buildStackHolder = new BuildStackHolder(board);
-            }
-
+//            if(cards.get(i).getFaceValue() == 0) {
+//                /* TODO SÅLEDES AT KONGE RYK KAN TESTES*/
+//
+//                board.add(new BuildStack());
+//                board.get(i).setIndex(i);
+//                buildStackHolder = new BuildStackHolder(board);
+//            } else {
+//                temp.add(cards.get(i));
+//                blocks.add(new Block(temp));
+//                board.add(new BuildStack(blocks));
+//                board.get(i).setIndex(i);
+//                buildStackHolder = new BuildStackHolder(board);
+//            }
         }
     }
+
+//    public boolean checkForErrors() {
+//        int counter = 0;
+//        for (BuildStack stack : buildStackHolder.getStackList()) {
+//            if (stack.isStackEmpty())
+//                continue;
+//            if (stack.getStackLeader().getDocker().compareCards(new Card(true, 3, Type.Heart)))
+//                counter++;
+//        }
+//        return counter > 1;
+//    }
 
     public int amountOfUnturnedCards(){
 

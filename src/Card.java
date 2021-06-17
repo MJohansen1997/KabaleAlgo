@@ -23,6 +23,17 @@ public class Card {
         this.type = type;
     }
 
+    public Card(boolean faceUp, int faceValue, int type) {
+        this.faceUp = faceUp;
+        this.faceValue = faceValue;
+        this.type = Type.fromInteger(type);
+        if (15 % (this.type.getValue() + 2) == 0)
+            this.colour = Colour.Red;
+        else
+            this.colour = Colour.Black;
+
+    }
+
     /**Constructor for fast creating of unturned cards*/
     public Card(boolean faceUp) {
         this.faceUp = faceUp;

@@ -98,7 +98,7 @@ public class Block {
         Block newBlock;
         LinkedList<Card> listOfCards = list.getBlock();
         newBlock = new Block(new LinkedList<>(listOfCards.subList(index, listOfCards.size())));
-        for (int i = index; i < listOfCards.size(); i++) {
+        for (int i = listOfCards.size()-1; i >= index; i--) {
             listOfCards.remove(i);
         }
         return newBlock;

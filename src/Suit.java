@@ -59,4 +59,8 @@ public class Suit {
         }
         return null;
     }
+
+    public boolean suitContains(Card card) {
+        return suitArray.get(card.getType().getValue()).peekLast().compareCards(card);
+    }
 }

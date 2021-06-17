@@ -76,8 +76,7 @@ public class BuildStack {
     }
 
     public LinkedList<Card> getAllCardsFromLeadStack(BuildStack stack) {
-        LinkedList<Card> allCardsInStack = stack.getStackLeader().getBlock();
-        return allCardsInStack;
+        return stack.getStackLeader().getBlock();
     }
 
 
