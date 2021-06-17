@@ -3,6 +3,7 @@ import java.util.LinkedList;
 //The block class act's as an container of cards that are linked up could be H5 S6, D7, C8 etc.
 public class Block {
     private final LinkedList<Card> block;
+    private LinkedList<Card> subBlock;
 
     public Block(LinkedList<Card> block) {
         this.block = block;
@@ -17,6 +18,13 @@ public class Block {
         this.block = new LinkedList<>(block.block);
     }
 
+    public Block (Card card) {
+        LinkedList<Card> temp = new LinkedList<>();
+        temp.add(card);
+        this.block = temp;
+    }
+
+    /**cloning of the block object for recursion purposes*/
     /**
      * cloning of the block object for recursion purposes
      */
@@ -73,17 +81,23 @@ public class Block {
         return block.peekLast();
     }
 
-    public Block removeBlock(Card card) {
+    public LinkedList<Card> splitedBlock(Block block, Card card) {
+        for (int i = 0; i < block.getBlock().size(); i++) {
+            if (block.getBlock().get(i).compareCards(card)){
+                subBlock.add(card);
+                for (int j = i ; j < block.getBlock().size(); j++) {
+                    subBlock.add(card);
+                }
+            }
+        }
+        return subBlock;
+    }
+
+    public Block removeBlock(int index) {
         Block list = this;
         Block newBlock;
         LinkedList<Card> listOfCards = list.getBlock();
-        int index = list.blockContainsIndex(card);
-
-        if(index == -1){
-            return null;
-        } else {
-            newBlock = (Block) listOfCards.subList(index, listOfCards.size() - 1);
-        }
+        newBlock = new Block(new LinkedList<>(listOfCards.subList(index, listOfCards.size())));
         for (int i = index; i < listOfCards.size(); i++) {
             listOfCards.remove(i);
         }
@@ -92,5 +106,3 @@ public class Block {
 
 
 }
-
-

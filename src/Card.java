@@ -30,6 +30,10 @@ public class Card {
         this.type = Type.Unturned;
     }
 
+    public Card(Type type) {
+        this.type = type;
+    }
+
     /**Cloning method for recursion purposes*/
     public Card cloneCard() {
         Card temp = new Card(false);
@@ -56,8 +60,14 @@ public class Card {
         return faceUp;
     }
 
-    public void setFaceUp() {
+    public void setFaceUp(int faceValue, int typeIndex) {
         faceUp = true;
+        this.faceValue = faceValue;
+        this.type = Type.fromInteger(typeIndex);
+        if (15 % (type.getValue() + 2) == 0)
+            this.colour = Colour.Red;
+        else
+            this.colour = Colour.Black;
     }
 
     /** Method to compare if two cards are the same card, notice not the same Object!
