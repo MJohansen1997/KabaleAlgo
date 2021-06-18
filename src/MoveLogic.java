@@ -93,7 +93,7 @@ public class MoveLogic {
             return move;
         if (temp.getLeader().getType() == Type.Unturned) {
 //                System.out.println("Unturned card found at: " + stack.getIndex() + " : " + stack.getStackLeader().block.indexOf(stack.getStackLeader().getLeader()));
-            return move.addMove(1 + (stack.getStack().size()), stack.getStackLeader().getLeader(), stack.getStackLeader().getLeader());
+            return move.addMove(0, stack.getStackLeader().getLeader(), stack.getStackLeader().getLeader());
         }
         return move;
     }
@@ -109,7 +109,10 @@ public class MoveLogic {
         if (suitCheck(frontCard, suit)) {
             int type = frontCard.getType().getValue();
 //            System.out.println("Legal Move Found: " + frontCard + " to Suit");
-            return move.addMove(0, frontCard, suit.getTop(type));
+            if (stack.getStackLeader().getBlock().size() == 1)
+                return move.addMove(stack.getStack().size(), frontCard, suit.getTop(type));
+            else
+                return move.addMove(0, frontCard, suit.getTop(type));
         }
         return null;
     }
@@ -135,7 +138,7 @@ public class MoveLogic {
                     return checkKingMove(block2Leader, holder.getStackList(), move, false, talon);
             }
             else
-                return null;
+                return move;
         }
 
         block1Leader = block1.getLeader();
@@ -144,23 +147,34 @@ public class MoveLogic {
         block2Docker = block2.getDocker();
 
 
-        if (checkLegalMove(block1Leader, block2Docker) && !(move.alreadyMoved(block1Leader))) {
-            //legal move was found between block1leader and block2docker which means block1 can be added too block2
-            int size = stack1.getStack().size();
-//            System.out.println("Legal Move Found: " + block1Leader + " to " + block2Docker);
-            //here we check if the block is the last one in the stack
-            if (size != 1) {
-                return move.addMove(0, block1Leader, block2Docker);
-            } else {
-                return move.addMove(1, block1Leader, block2Docker);
-            }
-        } else if (checkLegalMove(block2Leader, block1Docker) && !(move.alreadyMoved(block2Leader))) {
+//        if (checkLegalMove(block1Leader, block2Docker) && !(move.alreadyMoved(block1Leader))) {
+//            //legal move was found between block1leader and block2docker which means block1 can be added too block2
+//            int size = stack1.getStack().size();
+////            System.out.println("Legal Move Found: " + block1Leader + " to " + block2Docker);
+//            //here we check if the block is the last one in the stack
+//            if (size != 1) {
+//                return move.addMove(1 + (stack1.getStack().size()-1), block1Leader, block2Docker);
+//            } else {
+//                return move.addMove(1, block1Leader, block2Docker);
+//            }
+//        } else if (checkLegalMove(block2Leader, block1Docker) && !(move.alreadyMoved(block2Leader))) {
+//            //legal move was found between block2leader and block1docker which means block2 can be added too block1
+//            int size = stack2.getStack().size();
+////            System.out.println("Legal Move Found: " + block2Leader + block1Docker);
+//            //here we check if the block is the last one in the stack
+//            if (size != 1) {
+//                return move.addMove(1 + (stack2.getStack().size()-1), block2Leader, block1Docker);
+//            } else {
+//                return move.addMove(1, block2Leader, block1Docker);
+//            }
+//        }
+        if (checkLegalMove(block2Leader, block1Docker) && !(move.alreadyMoved(block2Leader))) {
             //legal move was found between block2leader and block1docker which means block2 can be added too block1
             int size = stack2.getStack().size();
 //            System.out.println("Legal Move Found: " + block2Leader + block1Docker);
             //here we check if the block is the last one in the stack
             if (size != 1) {
-                return move.addMove(0, block2Leader, block1Docker);
+                return move.addMove(1 + (stack2.getStack().size()-1), block2Leader, block1Docker);
             } else {
                 return move.addMove(1, block2Leader, block1Docker);
             }

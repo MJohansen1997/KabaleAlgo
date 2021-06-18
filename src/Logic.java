@@ -55,8 +55,8 @@ public class Logic {
     public void setUp() {
         ArrayList<Card> deckCards = new ArrayList<>();
         ArrayList<Card> cards = new ArrayList<>();
-        generateGame(true,1);
-//        setUpStandard(deckCards, cards);
+//        generateGame(true,1);
+        setUpStandard(deckCards, cards);
     }
 
     private void setUpStandard(ArrayList<Card> deckCards, ArrayList<Card> cards) {
@@ -236,26 +236,32 @@ public class Logic {
             winnable = true;
             move.point = 1000;
             listOfMoves.add(move);
-            return ;
+            return;
         }
         //checks the board for internal moves
         for (int i = 0; i < 7; i++) {
             //checking for moves from the stack that can lead to card being inserted into the suit
-            //checkForMoves(moveLogic.checkStackToSuit(suit, stackArray.get(i), move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit());
-            for (int j = i + 1; j < 7; j++) {
+            checkForMoves(moveLogic.checkStackToSuit(suit, stackArray.get(i), move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit());
+            ArrayList<Move> tempList = new ArrayList<>();
+            for (int j = 0; j < 7; j++) {
+                if (i == j)
+                    continue;
                 if (stackArray.get(j).getStack().size() == 0)
                     continue;
+                Move temp = moveLogic.checkInternalStackMove(holder, stackArray.get(i), stackArray.get(j), move, talon);
                 //Checking for possible moves internally between the stacks
-                move = moveLogic.checkInternalStackMove(holder, stackArray.get(i), stackArray.get(j), move, talon);
+                if (temp.moveListSim.size() != 0)
+                    tempList.add(temp);
             }
-        }
-        performSimMove(move, holder, talon, suit);
-
-        if (!move.hasMoves()) {
-            //checks for deck moves as the last thing
-            checkForMoves(moveLogic.findTalonMove(talon, stackArray, suit, move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit());
-//            System.out.println("Move combination alternative move" + moveLogic.findAlternativeStackMove(stackArray, move));
-            checkForMoves(moveLogic.findAlternativeStackMove(stackArray, move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit());
+            Move tempMax = new Move();
+            if (tempList.size() != 0) {
+                for (Move tempMove : tempList) {
+                    if (tempMax.point < tempMove.point)
+                        tempMax = tempMove;
+                }
+                move = tempMax;
+            }
+            performSimMove(move, holder, talon, suit);
         }
 
         //checks for unturned cards
@@ -270,6 +276,11 @@ public class Logic {
             listOfMoves.add(move);
             return;
         }
+
+        //checks for deck moves as the last thing
+        checkForMoves(moveLogic.findTalonMove(talon, stackArray, suit, move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit());
+//            System.out.println("Move combination alternative move" + moveLogic.findAlternativeStackMove(stackArray, move));
+        checkForMoves(moveLogic.findAlternativeStackMove(stackArray, move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit());
 //        System.out.println("Move Combination Found: " + move);
         listOfMoves.add(move);
     }
@@ -305,15 +316,15 @@ public class Logic {
             temp = new Move();
             for (BuildStack stack : buildStackHolder.getStackList()) {
                 temp = moveLogic.checkStackToSuit(suits, stack, move);
-                if (temp == null) {}
-                else
+                if (temp == null) {
+                } else
                     move = temp;
             }
             if (temp == null)
                 temp = moveLogic.findTalonMove(talons, buildStackHolder.getStackList(), suits, move);
 
-            if (temp == null){}
-            else
+            if (temp == null) {
+            } else
                 move = temp;
             performSimMove(move, buildStackHolder, talons, suits);
         }
@@ -373,22 +384,22 @@ public class Logic {
     public void generateGame(boolean wantSetValues, int setRandomValue) {
         ArrayList<Card> temp = new ArrayList<>();
         for (int i = 0; i <= 3; i++) {
-            if(i == 0) {
+            if (i == 0) {
                 for (int j = 1; j < 14; j++) {
-                    temp.add(new Card(true, j,0));
+                    temp.add(new Card(true, j, 0));
                 }
             }
-            if(i == 1){
+            if (i == 1) {
                 for (int j = 1; j < 14; j++) {
-                    temp.add(new Card(true, j,1));
+                    temp.add(new Card(true, j, 1));
                 }
             }
-            if(i == 2){
+            if (i == 2) {
                 for (int j = 1; j < 14; j++) {
-                    temp.add(new Card(true, j,2));
+                    temp.add(new Card(true, j, 2));
                 }
             }
-            if(i == 3){
+            if (i == 3) {
                 for (int j = 1; j < 14; j++) {
                     temp.add(new Card(true, j, 3));
                 }
@@ -398,7 +409,7 @@ public class Logic {
         /* Shuffles deck with set value or at random */
         Random rn = new Random();
         System.out.println("Before shuffle: " + temp);
-        if(wantSetValues){
+        if (wantSetValues) {
             rn.setSeed(setRandomValue);
             Collections.shuffle(temp, rn);
         } else {

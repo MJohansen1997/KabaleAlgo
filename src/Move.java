@@ -42,8 +42,8 @@ public class Move {
     }
 
     public boolean alreadyMoved(Card moved) {
-        for (int i = 0; i < moveList.size(); i += 2) {
-            if (moveList.get(i).compareCards(moved))
+        for (int i = 0; i < moveListSim.size(); i += 2) {
+            if (moveListSim.get(i).compareCards(moved))
                 return true;
         }
         return false;
@@ -51,7 +51,7 @@ public class Move {
 
     public boolean identicalMove(Card moveFrom, Card moveTo) {
         for (int i = 0; i < moveList.size(); i += 2) {
-            if (moveList.get(i).compareCards(moveFrom) && moveList.get(i+1).compareCards(moveTo))
+            if (moveList.get(i).compareCards(moveFrom) && (moveList.get(i+1).compareCards(moveTo)))
                 return true;
         }
         return false;
