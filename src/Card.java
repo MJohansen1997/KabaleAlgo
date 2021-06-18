@@ -71,10 +71,10 @@ public class Card {
         return faceUp;
     }
 
-    public void setFaceUp(int faceValue, int typeIndex) {
+    public void setFaceUp(Card card) {
         faceUp = true;
-        this.faceValue = faceValue;
-        this.type = Type.fromInteger(typeIndex);
+        this.faceValue = card.getFaceValue();
+        this.type = card.getType();
         if (15 % (type.getValue() + 2) == 0)
             this.colour = Colour.Red;
         else
