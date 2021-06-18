@@ -14,9 +14,8 @@ public class Logic {
     ArrayList<BuildStack> board = new ArrayList<>();
     BuildStackHolder buildStackHolder;
     Suit suits = new Suit();
-    ArrayList<Card> remainingCards = new ArrayList<>();
-    Random rn = new Random();
     int counter = 0;
+    Move absoluteMax;
 
     /**
      * The method called to run the algorithm
@@ -24,27 +23,16 @@ public class Logic {
     public void run() {
         listOfMoves = new ArrayList<>();
         Move move = new Move();
-        checkForMoves(move, buildStackHolder, talons, suits);
-        Move max = new Move();
-        for (Move maxCheck : listOfMoves) {
-            if (max.point < maxCheck.point) {
-                max = maxCheck;
-            }
-            if (max.point == maxCheck.point) {
-                if (max.moveList.size() > maxCheck.moveList.size()) {
-                    max = maxCheck;
-                }
-            }
-        }
-        if (max.moveList.size() == 0)
-            return;
-        String testString = "Max: " + max;
+        absoluteMax = new Move();
+        checkForMoves(move, buildStackHolder, talons, suits, 0);
+
+        String testString = "Max: " + absoluteMax;
         System.out.println(testString);
         //For testing purposes Only!
 //        if ( testString.equals("Max: Move{ 10 points [Card{9♣️}, Card{10♥️}, Card{8♥️}, Card{9♣️}, Card{6♠️}, Card{7♥️}, Card{5♥️}, Card{6♠️}, Card{4♣️}, Card{5♥️}, Card{0?}, Card{0?}, Card{0?}, Card{0?}]}"))
 //            System.out.println("yayet");
-        performPermanentMoves(max);
-        turnUnknownCard();
+        performPermanentMoves(absoluteMax);
+        insertEmpties();
         if (winnable)
             finishUp();
         else
@@ -57,8 +45,8 @@ public class Logic {
     public void setUp() {
         ArrayList<Card> deckCards = new ArrayList<>();
         ArrayList<Card> cards = new ArrayList<>();
-        generateGame(true,13);
-//        setUpStandard(deckCards, cards);
+//        generateGame(true,1);
+        setUpStandard(deckCards, cards);
     }
 
     private void setUpStandard(ArrayList<Card> deckCards, ArrayList<Card> cards) {
@@ -204,19 +192,19 @@ public class Logic {
         System.out.println("done : " + counter);
     }
 
-//    public void insertEmpties() {
-//        for (BuildStack stacks : buildStackHolder.getStackList()) {
-//            Block stackLeader = stacks.getStackLeader();
-//            if (stackLeader == null)
-//                continue;
-//            Card card = stackLeader.getLeader();
-//            if (card.getType() == Type.Unturned) {
-//                Scanner scanner = new Scanner(System.in);
-//                System.out.println("insert card from row : " + stacks.getIndex());
-//                card.setFaceUp(scanner.nextInt(), scanner.nextInt());
-//            }
-//        }
-//    }
+    public void insertEmpties() {
+        for (BuildStack stacks : buildStackHolder.getStackList()) {
+            Block stackLeader = stacks.getStackLeader();
+            if (stackLeader == null)
+                continue;
+            Card card = stackLeader.getLeader();
+            if (card.getType() == Type.Unturned) {
+                Scanner scanner = new Scanner(System.in);
+                System.out.println("insert card from row : " + stacks.getIndex());
+                card.setFaceUp(scanner.nextInt(), scanner.nextInt());
+            }
+        }
+    }
 
     /**
      * The main method of the algorithm which works as an recursive function
@@ -226,7 +214,7 @@ public class Logic {
      * @param talon  The talon to be used through the different iterations of the algorithm
      * @param suit   The suit to be used through the different iterations of the algorithm
      **/
-    public void checkForMoves(Move move, BuildStackHolder holder, Talon talon, Suit suit) {
+    public void checkForMoves(Move move, BuildStackHolder holder, Talon talon, Suit suit, int depthChecker) {
         //checks if the move sent on was null if that's the cast we can go no longer in this part of the route
         if (move == null)
             return;
@@ -238,31 +226,58 @@ public class Logic {
             winnable = true;
             move.point = 1000;
             listOfMoves.add(move);
-            return ;
+            return;
         }
         //checks the board for internal moves
         for (int i = 0; i < 7; i++) {
             //checking for moves from the stack that can lead to card being inserted into the suit
-            //checkForMoves(moveLogic.checkStackToSuit(suit, stackArray.get(i), move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit());
-            for (int j = i + 1; j < 7; j++) {
-                if (stackArray.get(j).getStack().size() == 0)
+            ArrayList<Move> tempList = new ArrayList<>();
+            for (int j = 0; j < 7; j++) {
+                if (i == j || stackArray.get(j).getStack().size() == 0)
                     continue;
+                Move temp = moveLogic.checkInternalStackMove(holder, stackArray.get(i), stackArray.get(j), move, talon);
                 //Checking for possible moves internally between the stacks
-                if(moveLogic.checkInternalStackMove(holder, stackArray.get(i), stackArray.get(j), move, talon) == null)
-                    continue;
-
-                move = moveLogic.checkInternalStackMove(holder, stackArray.get(i), stackArray.get(j), move, talon);
+                if (temp.moveListSim.size() != 0)
+                    tempList.add(temp);
             }
+            Move tempMax = new Move();
+            if (tempList.size() != 0) {
+                for (Move tempMove : tempList) {
+                    if (tempMax.point < tempMove.point)
+                        tempMax = tempMove;
+                }
+                move = tempMax;
+            }
+            if (move.moveListSim.size() != 0)
+                i = -1;
+            performSimMove(move, holder, talon, suit);
         }
-        performSimMove(move, holder, talon, suit);
+        //checks for unturned cards
+        if (checkForUnturnedCards(stackArray, move))
+            return;
 
-        if (!move.hasMoves()) {
-            //checks for deck moves as the last thing
-            checkForMoves(moveLogic.findTalonMove(talon, stackArray, suit, move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit());
+        //checks for deck moves as the last thing maybe try 2 but, 3 finished it same way as 4 but just faster!
+//        for (int j = depthChecker; j < 4; j++) {
+        for (int j = depthChecker; j < 3; j++) {
+            for (int i = 0; i < talon.getDeck().size(); i++) {
+                checkForMoves(moveLogic.findTalonToStackMove(i, talon, stackArray, suit, move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit(), j + 1);
+            }
+            break;
+        }
+        //checks for unturned cards
+        if (checkForUnturnedCards(stackArray, move))
+            return;
+
 //            System.out.println("Move combination alternative move" + moveLogic.findAlternativeStackMove(stackArray, move));
-            checkForMoves(moveLogic.findAlternativeStackMove(stackArray, move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit());
-        }
+        checkForMoves(moveLogic.findAlternativeStackMove(stackArray, move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit(), 0);
+        checkForMoves(moveLogic.checkStackToSuit(suit, holder, move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit(), depthChecker);
+        checkForMoves(moveLogic.findTalonToSuitMove(talon, suit, move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit(), depthChecker);
+//        System.out.println("Move Combination Found: " + move);
+        checkNewMax(move);
+//        listOfMoves.add(move);
+    }
 
+    private boolean checkForUnturnedCards(ArrayList<BuildStack> stackArray, Move move) {
         //checks for unturned cards
         Move temp = new Move();
         for (int i = 0; i < 7; i++) {
@@ -271,24 +286,22 @@ public class Logic {
         //if the algorithm found unturned cards we instantly ask the algorithm to stop searching on
         if (temp.hasMoves()) {
             move.add(temp);
+            checkNewMax(move);
 //            System.out.println("Move Combination Found: " + move);
-            listOfMoves.add(move);
-            return;
+//            listOfMoves.add(move);
+            return true;
         }
-//        System.out.println("Move Combination Found: " + move);
-        listOfMoves.add(move);
+        return false;
     }
 
-    //    public boolean checkForErrors() {
-//        int counter = 0;
-//        for (BuildStack stack : buildStackHolder.getStackList()) {
-//            if (stack.isStackEmpty())
-//                continue;
-//            if (stack.getStackLeader().getDocker().compareCards(new Card(true, 3, Type.Heart)))
-//                counter++;
-//        }
-//        return counter > 1;
-//    }
+    private void checkNewMax(Move move) {
+        if (absoluteMax.point < move.point)
+            if (absoluteMax.moveList.size() == 0)
+                absoluteMax = move;
+            else if (absoluteMax.moveList.size() > move.moveList.size())
+                absoluteMax = move;
+    }
+
     public boolean checkWin(BuildStackHolder holder) {
         int counter = 0;
         for (BuildStack stack : holder.getStackList()) {
@@ -308,18 +321,18 @@ public class Logic {
         Move temp;
         while (!suits.suitFinished()) {
             temp = new Move();
-            for (BuildStack stack : buildStackHolder.getStackList()) {
-                temp = moveLogic.checkStackToSuit(suits, stack, move);
-                if (temp == null) {}
-                else
-                    move = temp;
-            }
-            if (temp == null)
-                temp = moveLogic.findTalonMove(talons, buildStackHolder.getStackList(), suits, move);
+            temp = moveLogic.checkStackToSuit(suits, buildStackHolder, move);
 
-            if (temp == null){}
-            else
+            if (temp != null)
                 move = temp;
+
+            if (temp == null)
+                temp = moveLogic.findTalonToStackMove(0, talons, buildStackHolder.getStackList(), suits, move);
+            if (temp == null)
+                temp = moveLogic.findTalonToSuitMove(talons, suits, move);
+            if (temp != null)
+                move = temp;
+
             performSimMove(move, buildStackHolder, talons, suits);
         }
         System.out.println(move.toString());
@@ -376,64 +389,49 @@ public class Logic {
 
     /* USED TO SIMULATE SOLITAIRE FOR TESTING PURPOSES */
     public void generateGame(boolean wantSetValues, int setRandomValue) {
+        ArrayList<Card> temp = new ArrayList<>();
         for (int i = 0; i <= 3; i++) {
-            if(i == 0) {
+            if (i == 0) {
                 for (int j = 1; j < 14; j++) {
-                    remainingCards.add(new Card(true, j,0));
+                    temp.add(new Card(true, j, 0));
                 }
             }
-            if(i == 1){
+            if (i == 1) {
                 for (int j = 1; j < 14; j++) {
-                    remainingCards.add(new Card(true, j,1));
+                    temp.add(new Card(true, j, 1));
                 }
             }
-            if(i == 2){
+            if (i == 2) {
                 for (int j = 1; j < 14; j++) {
-                    remainingCards.add(new Card(true, j,2));
+                    temp.add(new Card(true, j, 2));
                 }
             }
-            if(i == 3){
+            if (i == 3) {
                 for (int j = 1; j < 14; j++) {
-                    remainingCards.add(new Card(true, j, 3));
+                    temp.add(new Card(true, j, 3));
                 }
             }
         }
 
         /* Shuffles deck with set value or at random */
-        System.out.println("Before shuffle: " + remainingCards);
-        if(wantSetValues){
+        Random rn = new Random();
+        System.out.println("Before shuffle: " + temp);
+        if (wantSetValues) {
             rn.setSeed(setRandomValue);
-            Collections.shuffle(remainingCards, rn);
+            Collections.shuffle(temp, rn);
         } else {
-            System.out.println(remainingCards);
-            Collections.shuffle(remainingCards);
+            System.out.println(temp);
+            Collections.shuffle(temp);
         }
-        System.out.println("After shuffle: " + remainingCards);
+        System.out.println("After shuffle: " + temp);
 
-        ArrayList<Card> stacks = new ArrayList<>(remainingCards.subList(0, 7));
-        remainingCards.removeAll(stacks);
+        ArrayList<Card> stacks = new ArrayList<>(temp.subList(0, 7));
+        temp.removeAll(stacks);
         setUpStacks(stacks);
-        ArrayList<Card> talonCards = new ArrayList<>(remainingCards.subList(0, 23));
+        ArrayList<Card> deckCards = new ArrayList<>(temp.subList(0, 23));
 //        System.out.println(deckCards.size());
-        talons = new Talon(talonCards);
-        remainingCards.removeAll(talonCards);
+        talons = new Talon(deckCards);
+        temp.removeAll(deckCards);
 //        System.out.println(stacks + "\n" + deckCards + "\n" + temp);
-    }
-
-    public void turnUnknownCard(){
-        for (BuildStack stacks : buildStackHolder.getStackList()) {
-            Block stackLeader = stacks.getStackLeader();
-            if (stackLeader == null)
-                continue;
-            Card card = stackLeader.getLeader();
-            if (card.getType() == Type.Unturned) {
-
-                int temp = rn.nextInt(remainingCards.size());
-                System.out.println("insert card from row : " + stacks.getIndex());
-                System.out.println(remainingCards.get(temp));
-                card.setFaceUp(remainingCards.get(temp));
-                remainingCards.remove(temp);
-            }
-        }
     }
 }
