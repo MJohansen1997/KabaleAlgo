@@ -244,14 +244,15 @@ public class Logic {
         //checks the board for internal moves
         for (int i = 0; i < 7; i++) {
             //checking for moves from the stack that can lead to card being inserted into the suit
-            checkForMoves(moveLogic.checkStackToSuit(suit, stackArray.get(i), move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit());
+            //checkForMoves(moveLogic.checkStackToSuit(suit, stackArray.get(i), move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit());
             for (int j = i + 1; j < 7; j++) {
                 if (stackArray.get(j).getStack().size() == 0)
                     continue;
                 //Checking for possible moves internally between the stacks
-                checkForMoves(moveLogic.checkInternalStackMove(holder, stackArray.get(i), stackArray.get(j), move, talon), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit());
+                move = moveLogic.checkInternalStackMove(holder, stackArray.get(i), stackArray.get(j), move, talon);
             }
         }
+        performSimMove(move, holder, talon, suit);
 
         if (!move.hasMoves()) {
             //checks for deck moves as the last thing

@@ -144,7 +144,7 @@ public class MoveLogic {
         block2Docker = block2.getDocker();
 
 
-        if (checkLegalMove(block1Leader, block2Docker)) {
+        if (checkLegalMove(block1Leader, block2Docker) && !(move.alreadyMoved(block1Leader))) {
             //legal move was found between block1leader and block2docker which means block1 can be added too block2
             int size = stack1.getStack().size();
 //            System.out.println("Legal Move Found: " + block1Leader + " to " + block2Docker);
@@ -154,7 +154,7 @@ public class MoveLogic {
             } else {
                 return move.addMove(1, block1Leader, block2Docker);
             }
-        } else if (checkLegalMove(block2Leader, block1Docker)) {
+        } else if (checkLegalMove(block2Leader, block1Docker) && !(move.alreadyMoved(block2Leader))) {
             //legal move was found between block2leader and block1docker which means block2 can be added too block1
             int size = stack2.getStack().size();
 //            System.out.println("Legal Move Found: " + block2Leader + block1Docker);
@@ -165,7 +165,7 @@ public class MoveLogic {
                 return move.addMove(1, block2Leader, block1Docker);
             }
         }
-        return null;
+        return move;
     }
 
     /** This method looks to find a move which can be made from the talon to either a suit or a build stack*/
