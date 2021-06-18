@@ -41,6 +41,22 @@ public class Move {
         return moveListSim;
     }
 
+    public boolean alreadyMoved(Card moved) {
+        for (int i = 0; i < moveList.size(); i += 2) {
+            if (moveList.get(i).compareCards(moved))
+                return true;
+        }
+        return false;
+    }
+
+    public boolean identicalMove(Card moveFrom, Card moveTo) {
+        for (int i = 0; i < moveList.size(); i += 2) {
+            if (moveList.get(i).compareCards(moveFrom) && moveList.get(i+1).compareCards(moveTo))
+                return true;
+        }
+        return false;
+    }
+
     @Override
     public String toString() {
         return "Move{ " + point + " points " + moveList.toString() + '}';
