@@ -1,8 +1,6 @@
 import Enums.Type;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * This Class contains all the logic around the running of the algorithm
@@ -57,9 +55,8 @@ public class Logic {
     public void setUp() {
         ArrayList<Card> deckCards = new ArrayList<>();
         ArrayList<Card> cards = new ArrayList<>();
-//        setUpTestForKing(deckCards, cards);
-        setUpStandard(deckCards, cards);
-
+        generateGame(true,1);
+//        setUpStandard(deckCards, cards);
     }
 
     private void setUpStandard(ArrayList<Card> deckCards, ArrayList<Card> cards) {
@@ -276,42 +273,6 @@ public class Logic {
         listOfMoves.add(move);
     }
 
-    /**
-     * This method simply setup all the stacks with their cards turned and unturned
-     *
-     * @param cards the List of cards going into the build stacks
-     */
-    public void setUpStacks(ArrayList<Card> cards) {
-        for (int i = 0; i <= 6; i++) {
-            ArrayList<Block> blocks = new ArrayList<>();
-            for (int j = i; j > 0; j--) {
-                LinkedList<Card> temp = new LinkedList<>();
-                temp.add(new Card(false));
-                blocks.add(new Block(temp));
-            }
-            LinkedList<Card> temp = new LinkedList<>();
-            temp.add(cards.get(i));
-            blocks.add(new Block(temp));
-            board.add(new BuildStack(blocks));
-            board.get(i).setIndex(i + 1);
-            buildStackHolder = new BuildStackHolder(board);
-
-//            if(cards.get(i).getFaceValue() == 0) {
-//                /* TODO SÅLEDES AT KONGE RYK KAN TESTES*/
-//
-//                board.add(new BuildStack());
-//                board.get(i).setIndex(i);
-//                buildStackHolder = new BuildStackHolder(board);
-//            } else {
-//                temp.add(cards.get(i));
-//                blocks.add(new Block(temp));
-//                board.add(new BuildStack(blocks));
-//                board.get(i).setIndex(i);
-//                buildStackHolder = new BuildStackHolder(board);
-//            }
-        }
-    }
-
     //    public boolean checkForErrors() {
 //        int counter = 0;
 //        for (BuildStack stack : buildStackHolder.getStackList()) {
@@ -369,5 +330,89 @@ public class Logic {
                 amountOfFaceDownCard += 1;
         }
         return amountOfFaceDownCard;
+    }
+
+    /**
+     * This method simply setup all the stacks with their cards turned and unturned
+     *
+     * @param cards the List of cards going into the build stacks
+     */
+    public void setUpStacks(ArrayList<Card> cards) {
+        for (int i = 0; i <= 6; i++) {
+            ArrayList<Block> blocks = new ArrayList<>();
+            for (int j = i; j > 0; j--) {
+                LinkedList<Card> temp = new LinkedList<>();
+                temp.add(new Card(false));
+                blocks.add(new Block(temp));
+            }
+            LinkedList<Card> temp = new LinkedList<>();
+            temp.add(cards.get(i));
+            blocks.add(new Block(temp));
+            board.add(new BuildStack(blocks));
+            board.get(i).setIndex(i + 1);
+            buildStackHolder = new BuildStackHolder(board);
+
+//            if(cards.get(i).getFaceValue() == 0) {
+//                /* TODO SÅLEDES AT KONGE RYK KAN TESTES*/
+//
+//                board.add(new BuildStack());
+//                board.get(i).setIndex(i);
+//                buildStackHolder = new BuildStackHolder(board);
+//            } else {
+//                temp.add(cards.get(i));
+//                blocks.add(new Block(temp));
+//                board.add(new BuildStack(blocks));
+//                board.get(i).setIndex(i);
+//                buildStackHolder = new BuildStackHolder(board);
+//            }
+        }
+    }
+
+    /* USED TO SIMULATE SOLITAIRE FOR TESTING PURPOSES */
+    public void generateGame(boolean wantSetValues, int setRandomValue) {
+        ArrayList<Card> temp = new ArrayList<>();
+        for (int i = 0; i <= 3; i++) {
+            if(i == 0) {
+                for (int j = 1; j < 14; j++) {
+                    temp.add(new Card(true, j,0));
+                }
+            }
+            if(i == 1){
+                for (int j = 1; j < 14; j++) {
+                    temp.add(new Card(true, j,1));
+                }
+            }
+            if(i == 2){
+                for (int j = 1; j < 14; j++) {
+                    temp.add(new Card(true, j,2));
+                }
+            }
+            if(i == 3){
+                for (int j = 1; j < 14; j++) {
+                    temp.add(new Card(true, j, 3));
+                }
+            }
+        }
+
+        /* Shuffles deck with set value or at random */
+        Random rn = new Random();
+        System.out.println("Before shuffle: " + temp);
+        if(wantSetValues){
+            rn.setSeed(setRandomValue);
+            Collections.shuffle(temp, rn);
+        } else {
+            System.out.println(temp);
+            Collections.shuffle(temp);
+        }
+        System.out.println("After shuffle: " + temp);
+
+        ArrayList<Card> stacks = new ArrayList<>(temp.subList(0, 7));
+        temp.removeAll(stacks);
+        setUpStacks(stacks);
+        ArrayList<Card> deckCards = new ArrayList<>(temp.subList(0, 23));
+//        System.out.println(deckCards.size());
+        talons = new Talon(deckCards);
+        temp.removeAll(deckCards);
+//        System.out.println(stacks + "\n" + deckCards + "\n" + temp);
     }
 }
