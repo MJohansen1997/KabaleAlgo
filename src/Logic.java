@@ -57,7 +57,7 @@ public class Logic {
     public void setUp() {
         ArrayList<Card> deckCards = new ArrayList<>();
         ArrayList<Card> cards = new ArrayList<>();
-        generateGame(true,2);
+        generateGame(true,13);
 //        setUpStandard(deckCards, cards);
     }
 
@@ -248,6 +248,9 @@ public class Logic {
                 if (stackArray.get(j).getStack().size() == 0)
                     continue;
                 //Checking for possible moves internally between the stacks
+                if(moveLogic.checkInternalStackMove(holder, stackArray.get(i), stackArray.get(j), move, talon) == null)
+                    continue;
+
                 move = moveLogic.checkInternalStackMove(holder, stackArray.get(i), stackArray.get(j), move, talon);
             }
         }
