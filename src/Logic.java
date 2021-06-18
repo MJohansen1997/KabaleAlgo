@@ -57,7 +57,7 @@ public class Logic {
     public void setUp() {
         ArrayList<Card> deckCards = new ArrayList<>();
         ArrayList<Card> cards = new ArrayList<>();
-        generateGame(true,4);
+        generateGame(true,2);
 //        setUpStandard(deckCards, cards);
     }
 
