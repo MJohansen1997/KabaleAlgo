@@ -91,7 +91,7 @@ public class MoveLogic {
             /* Add move that kings needs to move to empty block */
             return move.addMove(1, king, new Card(Type.Empty)).addMove(0, queen, king);
         }
-        return null;
+        return move;
     }
 
     /**
@@ -188,15 +188,14 @@ public class MoveLogic {
                 if (checkLegalMoveKing(deckCard, stack, null)) {
                     Move temporarily = checkKingMove(deckCard, stacks, move, false, talon);
                     ;
-                    if (temporarily != null)
+                    if (temporarily.hasMoves())
                         return temporarily;
                 } else
                     continue;
             }
             Card stackDocker = stackLeader.getDocker();
-
             //checks if the two card is a legal move
-            if (checkLegalMove(deckCard, stackDocker)) {
+            if (stackDocker != null && checkLegalMove(deckCard, stackDocker)) {
                 //card can be moved to the stack
 //                System.out.println("Legal Move Found: From Talon " + deckCard + " To " + stackDocker);
                 return move.addMove(0, deckCard, stackDocker);
