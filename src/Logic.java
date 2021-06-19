@@ -35,8 +35,13 @@ public class Logic {
         listOfMoves = new ArrayList<>();
         Move move = new Move();
         absoluteMax = new Move();
-        checkForMoves(move, buildStackHolder, talons, suits, 0);
-        if (move.moveList.size() == 0 && counter++ > 3){
+        try {
+            checkForMoves(move, buildStackHolder, talons, suits, 0);
+        } catch (Exception e) {
+            if(!e.getMessage().equals("win"))
+                return;
+        }
+        if (absoluteMax.moveList.size() == 0 && counter++ > 3){
             System.out.println("No solution :(");
             return;
         }
@@ -47,7 +52,7 @@ public class Logic {
 //        if ( testString.equals("Max: Move{ 10 points [Card{9♣️}, Card{10♥️}, Card{8♥️}, Card{9♣️}, Card{6♠️}, Card{7♥️}, Card{5♥️}, Card{6♠️}, Card{4♣️}, Card{5♥️}, Card{0?}, Card{0?}, Card{0?}, Card{0?}]}"))
 //            System.out.println("yayet");
         performPermanentMoves(absoluteMax);
-        insertEmpties();
+//        insertEmpties();
         turnUnknownCard();
         if (winnable) {
             finishUp();
@@ -222,7 +227,7 @@ public class Logic {
      * @param talon  The talon to be used through the different iterations of the algorithm
      * @param suit   The suit to be used through the different iterations of the algorithm
      **/
-    public void checkForMoves(Move move, BuildStackHolder holder, Talon talon, Suit suit, int depthChecker) {
+    public void checkForMoves(Move move, BuildStackHolder holder, Talon talon, Suit suit, int depthChecker) throws Exception {
         //checks if the move sent on was null if that's the cast we can go no longer in this part of the route
         if (move == null)
             return;
@@ -232,9 +237,10 @@ public class Logic {
         if (checkWin(holder)) {
             System.out.println("winnable");
             winnable = true;
-            move.point = 1000;
-            listOfMoves.add(move);
-            return;
+//            move.point = 1000;
+//            listOfMoves.add(move);
+            absoluteMax = move;
+            throw new Exception("win");
         }
         //checks the board for internal moves
         for (int i = 0; i < 7; i++) {
@@ -266,7 +272,7 @@ public class Logic {
 
         //checks for deck moves as the last thing maybe try 2 but, 3 finished it same way as 4 but just faster!
 //        for (int j = depthChecker; j < 4; j++) {
-        for (int j = depthChecker; j < 3; j++) {
+        for (int j = depthChecker; j < 2; j++) {
             for (int i = 0; i < talon.getDeck().size(); i++) {
                 checkForMoves(moveLogic.findTalonToStackMove(i, talon, stackArray, suit, move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit(), j + 1);
             }
@@ -325,6 +331,7 @@ public class Logic {
     }
 
     public void finishUp() {
+        System.out.println("Finishing up the rest of the game");
         Move move = new Move();
         Move temp;
         while (!suits.suitFinished()) {
@@ -342,6 +349,7 @@ public class Logic {
                 move = temp;
 
             performSimMove(move, buildStackHolder, talons, suits);
+            turnUnknownCard();
         }
 
         System.out.println(move.toString());
@@ -428,7 +436,7 @@ public class Logic {
         remainingCards.removeAll(stacks);
         setUpStacks(stacks);
 
-        ArrayList<Card> talonCards = new ArrayList<>(remainingCards.subList(0, 23));
+        ArrayList<Card> talonCards = new ArrayList<>(remainingCards.subList(0, 24));
         talons = new Talon(talonCards);
         remainingCards.removeAll(talonCards);
 

@@ -179,6 +179,8 @@ public class MoveLogic {
     public Move findTalonToStackMove(int i, Talon talon, ArrayList<BuildStack> stacks, Suit suit, Move move) {
 //        Card deckCard = talon.getDeck().get(index);
         //checks through each build stack if the card can be added to that stacks docker
+        if(talon.getDeck().size() == 0)
+            return null;
 
         Card deckCard = talon.getDeck().get(i);
         for (BuildStack stack : stacks) {
@@ -206,6 +208,9 @@ public class MoveLogic {
     }
 
     public Move findTalonToSuitMove(Talon talon, Suit suit, Move move) {
+        if (talon.getDeck().size() == 0)
+            return null;
+
         for (Card deckCard : talon.getDeck()) {
             //checks if the deck card can be added to the suit
             if (suitCheck(deckCard, suit)) {
