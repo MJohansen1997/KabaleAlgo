@@ -14,18 +14,29 @@ public class Logic {
     ArrayList<BuildStack> board = new ArrayList<>();
     BuildStackHolder buildStackHolder;
     Suit suits = new Suit();
+    ArrayList<Card> remainingCards = new ArrayList<>();
+    Random rn = new Random();
     int counter = 0;
     Move absoluteMax;
 
-    /**
-     * The method called to run the algorithm
-     */
+
+    /* For now a method for setting up the game hardcoded #Todo Should make this automated and not hardcoded */
+    public void setUp() {
+        ArrayList<Card> deckCards = new ArrayList<>();
+        ArrayList<Card> cards = new ArrayList<>();
+        setUpStandard(deckCards, cards);
+
+//        generateGame(true,1);
+//        testAlgorithm(100, true);
+    }
+
+    /*The method called to run the algorithm */
     public void run() {
         listOfMoves = new ArrayList<>();
         Move move = new Move();
         absoluteMax = new Move();
         checkForMoves(move, buildStackHolder, talons, suits, 0);
-        if (move.moveList.size() == 0 && counter++ == 3){
+        if (move.moveList.size() == 0 && counter++ > 3){
             System.out.println("No solution :(");
             return;
         }
@@ -37,21 +48,15 @@ public class Logic {
 //            System.out.println("yayet");
         performPermanentMoves(absoluteMax);
         insertEmpties();
-        if (winnable)
+        turnUnknownCard();
+        if (winnable) {
             finishUp();
+        }
         else
             run();
     }
 
-    /**
-     * For now a method for setting up the game hardcoded #Todo Should make this automated and not hardcoded
-     */
-    public void setUp() {
-        ArrayList<Card> deckCards = new ArrayList<>();
-        ArrayList<Card> cards = new ArrayList<>();
-//        generateGame(true,1);
-        setUpStandard(deckCards, cards);
-    }
+
 
     private void setUpStandard(ArrayList<Card> deckCards, ArrayList<Card> cards) {
         cards.add(new Card(true, 12, Type.Clover));
@@ -239,7 +244,7 @@ public class Logic {
                 if (i == j || stackArray.get(j).getStack().size() == 0)
                     continue;
                 Move temp = moveLogic.checkInternalStackMove(holder, stackArray.get(i), stackArray.get(j), move, talon);
-                //Checking for possible moves internally between the stacks
+                //Checking for possible moves internally between the stacks'
                 if (temp.moveListSim.size() != 0)
                     tempList.add(temp);
             }
@@ -319,7 +324,7 @@ public class Logic {
         return (counter == 7);
     }
 
-    public Move finishUp() {
+    public void finishUp() {
         Move move = new Move();
         Move temp;
         while (!suits.suitFinished()) {
@@ -338,9 +343,9 @@ public class Logic {
 
             performSimMove(move, buildStackHolder, talons, suits);
         }
+
         System.out.println(move.toString());
         System.out.println("done for real");
-        return null;
     }
 
     public int amountOfUnturnedCards() {
@@ -373,68 +378,76 @@ public class Logic {
             board.add(new BuildStack(blocks));
             board.get(i).setIndex(i + 1);
             buildStackHolder = new BuildStackHolder(board);
-
-//            if(cards.get(i).getFaceValue() == 0) {
-//                /* TODO SÅLEDES AT KONGE RYK KAN TESTES*/
-//
-//                board.add(new BuildStack());
-//                board.get(i).setIndex(i);
-//                buildStackHolder = new BuildStackHolder(board);
-//            } else {
-//                temp.add(cards.get(i));
-//                blocks.add(new Block(temp));
-//                board.add(new BuildStack(blocks));
-//                board.get(i).setIndex(i);
-//                buildStackHolder = new BuildStackHolder(board);
-//            }
         }
+    }
+
+    public void resetGame() {
+        remainingCards = new ArrayList<>();
+        suits = new Suit();
+        counter = 0;
     }
 
     /* USED TO SIMULATE SOLITAIRE FOR TESTING PURPOSES */
     public void generateGame(boolean wantSetValues, int setRandomValue) {
-        ArrayList<Card> temp = new ArrayList<>();
         for (int i = 0; i <= 3; i++) {
             if (i == 0) {
                 for (int j = 1; j < 14; j++) {
-                    temp.add(new Card(true, j, 0));
+                    remainingCards.add(new Card(true, j,0));
                 }
             }
             if (i == 1) {
                 for (int j = 1; j < 14; j++) {
-                    temp.add(new Card(true, j, 1));
+                    remainingCards.add(new Card(true, j,1));
                 }
             }
             if (i == 2) {
                 for (int j = 1; j < 14; j++) {
-                    temp.add(new Card(true, j, 2));
+                    remainingCards.add(new Card(true, j,2));
                 }
             }
             if (i == 3) {
                 for (int j = 1; j < 14; j++) {
-                    temp.add(new Card(true, j, 3));
+                    remainingCards.add(new Card(true, j, 3));
                 }
             }
         }
 
         /* Shuffles deck with set value or at random */
-        Random rn = new Random();
-        System.out.println("Before shuffle: " + temp);
-        if (wantSetValues) {
+        System.out.println("Before shuffle: " + remainingCards);
+        if(wantSetValues){
             rn.setSeed(setRandomValue);
-            Collections.shuffle(temp, rn);
+            Collections.shuffle(remainingCards, rn);
         } else {
-            System.out.println(temp);
-            Collections.shuffle(temp);
+            System.out.println(remainingCards);
+            Collections.shuffle(remainingCards);
         }
-        System.out.println("After shuffle: " + temp);
+        System.out.println("After shuffle: " + remainingCards);
 
-        ArrayList<Card> stacks = new ArrayList<>(temp.subList(0, 7));
-        temp.removeAll(stacks);
+        /* Setting up stacks and new Talon */
+        ArrayList<Card> stacks = new ArrayList<>(remainingCards.subList(0, 7));
+        remainingCards.removeAll(stacks);
         setUpStacks(stacks);
-        ArrayList<Card> deckCards = new ArrayList<>(temp.subList(0, 23));
-//        System.out.println(deckCards.size());
-        talons = new Talon(deckCards);
-        temp.removeAll(deckCards);
-//        System.out.println(stacks + "\n" + deckCards + "\n" + temp);
+
+        ArrayList<Card> talonCards = new ArrayList<>(remainingCards.subList(0, 23));
+        talons = new Talon(talonCards);
+        remainingCards.removeAll(talonCards);
+
+    }
+
+    public void turnUnknownCard(){
+        for (BuildStack stacks : buildStackHolder.getStackList()) {
+            Block stackLeader = stacks.getStackLeader();
+            if (stackLeader == null)
+                continue;
+            Card card = stackLeader.getLeader();
+            if (card.getType() == Type.Unturned) {
+
+                int temp = rn.nextInt(remainingCards.size());
+                System.out.println("insert card from row : " + stacks.getIndex() + " : "+ remainingCards.get(temp));
+                card.setFaceUp(remainingCards.get(temp));
+                remainingCards.remove(temp);
+//                System.out.println(remainingCards);
+            }
+        }
     }
 }

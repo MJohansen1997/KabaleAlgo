@@ -75,7 +75,13 @@ public class Card {
         faceUp = true;
         this.faceValue = card.getFaceValue();
         this.type = card.getType();
-        if (15 % (type.getValue() + 2) == 0)
+        this.colour = card.getColour();
+    }
+    public void setFaceUp(int faceValue, int type) {
+        faceUp = true;
+        this.faceValue = faceValue;
+        this.type = Enums.Type.fromInteger(type);
+        if (15 % (this.type.getValue() + 2) == 0)
             this.colour = Colour.Red;
         else
             this.colour = Colour.Black;
