@@ -25,6 +25,10 @@ public class Logic {
         Move move = new Move();
         absoluteMax = new Move();
         checkForMoves(move, buildStackHolder, talons, suits, 0);
+        if (move.moveList.size() == 0 && counter++ == 3){
+            System.out.println("No solution :(");
+            return;
+        }
 
         String testString = "Max: " + absoluteMax;
         System.out.println(testString);
@@ -189,7 +193,6 @@ public class Logic {
                 continue;
             insertCard(removeCard(card1, buildStackHolder, talons, suits), card2, buildStackHolder, suits);
         }
-        System.out.println("done : " + counter);
     }
 
     public void insertEmpties() {
