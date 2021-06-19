@@ -35,6 +35,7 @@ public class Logic {
         listOfMoves = new ArrayList<>();
         Move move = new Move();
         absoluteMax = new Move();
+        absoluteMax.point = -1;
         try {
             checkForMoves(move, buildStackHolder, talons, suits, 0);
         } catch (Exception e) {
@@ -272,7 +273,7 @@ public class Logic {
 
         //checks for deck moves as the last thing maybe try 2 but, 3 finished it same way as 4 but just faster!
 //        for (int j = depthChecker; j < 4; j++) {
-        for (int j = depthChecker; j < 2; j++) {
+        for (int j = depthChecker; j < 1; j++) {
             for (int i = 0; i < talon.getDeck().size(); i++) {
                 checkForMoves(moveLogic.findTalonToStackMove(i, talon, stackArray, suit, move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit(), j + 1);
             }
@@ -309,7 +310,9 @@ public class Logic {
     }
 
     private void checkNewMax(Move move) {
-        if (absoluteMax.point < move.point)
+        if (move.moveList.size() == 0)
+            return;
+        if (absoluteMax.point <= move.point)
             if (absoluteMax.moveList.size() == 0)
                 absoluteMax = move;
             else if (absoluteMax.moveList.size() > move.moveList.size())
