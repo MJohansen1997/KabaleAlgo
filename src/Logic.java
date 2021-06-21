@@ -32,6 +32,7 @@ public class Logic {
 
     /*The method called to run the algorithm */
     public void run() {
+        do {
         listOfMoves = new ArrayList<>();
         Move move = new Move();
         absoluteMax = new Move();
@@ -43,23 +44,21 @@ public class Logic {
                 return;
         }
         if (absoluteMax.moveList.size() == 0 && counter++ > 3){
-            System.out.println("No solution :(");
+//            System.out.println("No solution :(");
             return;
         }
 
         String testString = "Max: " + absoluteMax;
-        System.out.println(testString);
+//        System.out.println(testString);
         //For testing purposes Only!
 //        if ( testString.equals("Max: Move{ 10 points [Card{9♣️}, Card{10♥️}, Card{8♥️}, Card{9♣️}, Card{6♠️}, Card{7♥️}, Card{5♥️}, Card{6♠️}, Card{4♣️}, Card{5♥️}, Card{0?}, Card{0?}, Card{0?}, Card{0?}]}"))
 //            System.out.println("yayet");
         performPermanentMoves(absoluteMax);
 //        insertEmpties();
         turnUnknownCard();
-        if (winnable) {
-            finishUp();
         }
-        else
-            run();
+        while (!winnable);
+        finishUp();
     }
 
 
@@ -214,7 +213,7 @@ public class Logic {
             Card card = stackLeader.getLeader();
             if (card.getType() == Type.Unturned) {
                 Scanner scanner = new Scanner(System.in);
-                System.out.println("insert card from row : " + stacks.getIndex());
+                //System.out.println("insert card from row : " + stacks.getIndex());
                 card.setFaceUp(scanner.nextInt(), scanner.nextInt());
             }
         }
@@ -236,7 +235,7 @@ public class Logic {
         performSimMove(move, holder, talon, suit);
         ArrayList<BuildStack> stackArray = holder.getStackList();
         if (checkWin(holder)) {
-            System.out.println("winnable");
+            //System.out.println("winnable");
             winnable = true;
 //            move.point = 1000;
 //            listOfMoves.add(move);
@@ -275,6 +274,7 @@ public class Logic {
 //        for (int j = depthChecker; j < 4; j++) {
         for (int j = depthChecker; j < 1; j++) {
             for (int i = 0; i < talon.getDeck().size(); i++) {
+//                System.out.println("checking talon move " + i);
                 checkForMoves(moveLogic.findTalonToStackMove(i, talon, stackArray, suit, move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit(), j + 1);
             }
             break;
@@ -284,7 +284,7 @@ public class Logic {
             return;
 
 //            System.out.println("Move combination alternative move" + moveLogic.findAlternativeStackMove(stackArray, move));
-        checkForMoves(moveLogic.findAlternativeStackMove(stackArray, move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit(), 0);
+//        checkForMoves(moveLogic.findAlternativeStackMove(stackArray, move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit(), depthChecker);
         checkForMoves(moveLogic.checkStackToSuit(suit, holder, move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit(), depthChecker);
         checkForMoves(moveLogic.findTalonToSuitMove(talon, suit, move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit(), depthChecker);
 //        System.out.println("Move Combination Found: " + move);
@@ -334,7 +334,7 @@ public class Logic {
     }
 
     public void finishUp() {
-        System.out.println("Finishing up the rest of the game");
+        //System.out.println("Finishing up the rest of the game");
         Move move = new Move();
         Move temp;
         while (!suits.suitFinished()) {
@@ -355,8 +355,8 @@ public class Logic {
             turnUnknownCard();
         }
 
-        System.out.println(move.toString());
-        System.out.println("done for real");
+        //System.out.println(move.toString());
+        //System.out.println("done for real");
     }
 
     public int amountOfUnturnedCards() {
@@ -424,15 +424,15 @@ public class Logic {
         }
 
         /* Shuffles deck with set value or at random */
-        System.out.println("Before shuffle: " + remainingCards);
+//        System.out.println("Before shuffle: " + remainingCards);
         if(wantSetValues){
             rn.setSeed(setRandomValue);
             Collections.shuffle(remainingCards, rn);
         } else {
-            System.out.println(remainingCards);
+            //System.out.println(remainingCards);
             Collections.shuffle(remainingCards);
         }
-        System.out.println("After shuffle: " + remainingCards);
+//        System.out.println("After shuffle: " + remainingCards);
 
         /* Setting up stacks and new Talon */
         ArrayList<Card> stacks = new ArrayList<>(remainingCards.subList(0, 7));
@@ -454,7 +454,7 @@ public class Logic {
             if (card.getType() == Type.Unturned) {
 
                 int temp = rn.nextInt(remainingCards.size());
-                System.out.println("insert card from row : " + stacks.getIndex() + " : "+ remainingCards.get(temp));
+                //System.out.println("insert card from row : " + stacks.getIndex() + " : "+ remainingCards.get(temp));
                 card.setFaceUp(remainingCards.get(temp));
                 remainingCards.remove(temp);
 //                System.out.println(remainingCards);

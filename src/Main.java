@@ -1,35 +1,84 @@
 import java.sql.Time;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         Logic logic = new Logic();
 //        logic.setUp();
 //        logic.run();
-        testAlgorithm(logic, 10000, true);
+        testAlgorithm(logic, 1000, true);
     }
 
-    public static void testAlgorithm(Logic logic, int runs, boolean setValues) {
-        ArrayList<Integer> setValueWins = new ArrayList<>();
-        long totalTime = 0;
-        for (int i = 9; i <= runs; i++) {
+    public static void testAlgorithm(Logic logic, int runs, boolean setValues) throws InterruptedException {
+        SynchronizedCounter counter = new SynchronizedCounter();
+        final ArrayList<Integer>[] setValueWins = new ArrayList[]{new ArrayList<>()};
+        ArrayList<Double> totalTime = new ArrayList<>();
+        totalTime.add((double) 0);
+        ArrayList<Thread> threadList = new ArrayList<>();
+        //final long[] totalTime = {0};
+        for (int j = 0; j < 10; j++) {
+            int finalJ = j;
+            Thread thread = new Thread(String.valueOf(j)) {
+                Logic logic = new Logic();
+                int i;
+                public void run() {
+                    while (counter.getCount() < runs) {
+                        synchronized (this) {
+                            i = counter.increment();
+                        }
+                        System.out.println("Thread" + this.getName() + " is starting on i = " + i);
+//                    ArrayList<Integer> setValueWins = new ArrayList<>();
+//                    long totalTime = 0;
+                        //for (int i = finalJ; i <= runs; i+=20) {
+                        //System.out.println("Thread" + this.getName() + " is starting a new game");
 //            logic.generateGame(setValues, i);
-            System.out.println("\nTEST NUMBER : "+i+"\n");
-            logic = new Logic();
-            logic.generateGame(setValues,i);
-            long time1 = System.currentTimeMillis();
-            logic.run();
-            if(logic.winnable) {
-                setValueWins.add(i);
-                System.out.println("has won " + setValueWins.size() + " out of " + i);
-                long time2 = System.currentTimeMillis();
-                totalTime += time2-time1;
-            }
+//                        System.out.println("\nTEST NUMBER : " + i + "\n");
+                        logic = new Logic();
+                        logic.generateGame(setValues, i);
+                        long time1 = System.currentTimeMillis();
+                        logic.run();
+                        if (logic.winnable) {
+                            synchronized (this) {
+                                System.out.println("Thread" + this.getName() + " is winning");
+                                setValueWins[0].add(i);
+//                            System.out.println("has won " + setValueWins.size() + " out of " + i);
+                                long time2 = System.currentTimeMillis();
+                                totalTime.set(0, totalTime.get(0) + (time2 - time1));
+                            }
+                        }
+                        System.out.println("Thread" + this.getName() + " is finishing on i = " + i);
+                    }
 
-            //System.out.println(totalTime);
+                        //System.out.println(totalTime);
+                    }
+//                    System.out.println("The algorithm solved the games with the set values of: " + setValueWins + "which means that " + setValueWins.size() + " games got solved out of " + runs / 20 + " and it took an average time of " + (totalTime[0] / setValueWins.size()) / 1000 + " seconds to solve them");
+//                    System.out.println(this.getName() + " is Done");
+
+               // }
+            };
+            threadList.add(thread);
+            thread.start();
         }
-        System.out.println("The algorithm solved the games with the set values of: " + setValueWins + "which means that " + setValueWins.size() + " games got solved out of " + runs + " and it took an average time of " + (totalTime/setValueWins.size())/1000 + " seconds to solve them");
+        for (Thread thread : threadList) {
+            thread.join();
+        }
+        System.out.println("The algorithm solved the games with the set values of: " + setValueWins[0] + " which means that " + setValueWins[0].size() + " games got solved out of " + runs + " and it took an average time of " + (totalTime.get(0) / setValueWins[0].size()) / 1000 + " seconds to solve them");
+    }
+
+    static class SynchronizedCounter {
+        private int count = 0;
+
+        // Synchronized Method
+        public synchronized int increment() {
+            count = count + 1;
+            return count;
+        }
+
+        public int getCount() {
+            return count;
+        }
     }
 }
