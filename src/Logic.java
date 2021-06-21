@@ -284,7 +284,7 @@ public class Logic {
             return;
 
 //            System.out.println("Move combination alternative move" + moveLogic.findAlternativeStackMove(stackArray, move));
-//        checkForMoves(moveLogic.findAlternativeStackMove(stackArray, move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit(), depthChecker);
+        checkForMoves(moveLogic.findAlternativeStackMove(stackArray, move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit(), depthChecker);
         checkForMoves(moveLogic.checkStackToSuit(suit, holder, move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit(), depthChecker);
         checkForMoves(moveLogic.findTalonToSuitMove(talon, suit, move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit(), depthChecker);
 //        System.out.println("Move Combination Found: " + move);

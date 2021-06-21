@@ -1,7 +1,4 @@
-import java.sql.Time;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.concurrent.CountDownLatch;
 
 public class Main {
 
@@ -9,10 +6,10 @@ public class Main {
         Logic logic = new Logic();
 //        logic.setUp();
 //        logic.run();
-        testAlgorithm(logic, 1000, true);
+        testAlgorithmThreads(logic, 1000, true);
     }
 
-    public static void testAlgorithm(Logic logic, int runs, boolean setValues) throws InterruptedException {
+    public static void testAlgorithmThreads(Logic logic, int runs, boolean setValues) throws InterruptedException {
         SynchronizedCounter counter = new SynchronizedCounter();
         final ArrayList<Integer>[] setValueWins = new ArrayList[]{new ArrayList<>()};
         ArrayList<Double> totalTime = new ArrayList<>();
