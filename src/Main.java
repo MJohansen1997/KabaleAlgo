@@ -8,7 +8,7 @@ public class Main {
 //        logic.run();
         testAlgorithmThreads(logic, 100, true);
     }
-    
+
     public static void testAlgorithmThreads(Logic logic, int runs, boolean setValues) throws InterruptedException {
         SynchronizedCounter counter = new SynchronizedCounter();
         final ArrayList<Integer>[] setValueWins = new ArrayList[]{new ArrayList<>()};
