@@ -1,10 +1,10 @@
 import Enums.Type;
 
 import java.util.*;
-
 /**
+ * @author Gruppe 13 - Jacob Christensen s174130, Mads Hansen s195456, Mikkel Johansen s175194, Shania Hau s195477, Stefan Luxhøj s195467
  * This Class contains all the logic around the running of the algorithm
- */
+ **/
 public class Logic {
     //The different variables used throughout the class
     boolean winnable = false;
@@ -18,6 +18,17 @@ public class Logic {
     Random rn = new Random();
     int counter = 0;
     Move absoluteMax;
+
+    /* DEPTH TEST */
+    int depth = 0;
+    public void setDepth(int depth) {
+        this.depth = depth;
+    }
+    public int getDepth() {
+        return depth;
+    }
+
+
 
 
     /* For now a method for setting up the game hardcoded #Todo Should make this automated and not hardcoded */
@@ -272,7 +283,7 @@ public class Logic {
 
         //checks for deck moves as the last thing maybe try 2 but, 3 finished it same way as 4 but just faster!
 //        for (int j = depthChecker; j < 4; j++) {
-        for (int j = depthChecker; j < 1; j++) {
+        for (int j = depthChecker; j < getDepth(); j++) {
             for (int i = 0; i < talon.getDeck().size(); i++) {
 //                System.out.println("checking talon move " + i);
                 checkForMoves(moveLogic.findTalonToStackMove(i, talon, stackArray, suit, move), holder.cloneHolder(), talon.cloneTalon(), suit.cloneSuit(), j + 1);
